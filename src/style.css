@@ -54,7 +54,7 @@ body {
     border: 2px solid black;
 }
 
-.app--tile {
+.tile {
     display: flex;
     justify-content: center;
     align-items: center;

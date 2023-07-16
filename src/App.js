@@ -1,9 +1,11 @@
 import React from "react"
 import Tile from "./components/Tile"
-import './style.css'
+import "./style.css"
+import {nanoid} from "nanoid"
 
 export default function App() {
-    const [board, setBoard] = React.useState(putNumbers())
+    const [board, setBoard] = React.useState(generateTiles())
+    const [gameStatus, setGameStatus] = React.useState("onGoing")
     
     function generateEmptyBoard() {
         const result = []
@@ -22,13 +24,15 @@ export default function App() {
         for (let i = 0; i < 64; i++) {
             positions.push(i)
         }
+        console.log(positions)
         for (let i = 0; i < 10; i++) {
-            const randomIndex = positions[Math.floor(positions.length * Math.random())]
+            const posIndex = Math.floor(positions.length * Math.random())
+            const randomIndex = positions[posIndex]
             const row = Math.floor(randomIndex / 8)
             const col = randomIndex % 8
             minesBoard[row][col] = "*"
-            positions = positions.slice(0, randomIndex)
-                .concat(positions.slice(randomIndex + 1, positions.length))
+            positions = positions.slice(0, posIndex)
+                .concat(positions.slice(posIndex + 1, positions.length))
         }
         return minesBoard
     }
@@ -58,91 +62,57 @@ export default function App() {
             }
         }
         return newBoard
-        // if (newBoard[0][0] === "") {
-        //     value = 0
-        //     if (newBoard[1][0] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[0][1] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[1][1] === "*") {
-        //         value++
-        //     }
-        //     newBoard[0][0] = value
-        // }
-        // if (newBoard[7][0] === "") {
-        //     value = 0
-        //     if (newBoard[6][0] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[7][1] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[6][1] === "*") {
-        //         value++
-        //     }
-        //     newBoard[7][0] = value
-        // }
-        // if (newBoard[0][7] === "") {
-        //     value = 0
-        //     if (newBoard[1][7] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[0][6] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[1][6] === "*") {
-        //         value++
-        //     }
-        //     newBoard[0][7] = value
-        // }
-        // if (newBoard[7][7] === "") {
-        //     value = 0
-        //     if (newBoard[6][7] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[7][6] === "*") {
-        //         value++
-        //     }
-        //     if (newBoard[6][6] === "*") {
-        //         value++
-        //     }
-        //     newBoard[6][6] = value
-        // }
-        // for (let col = 1; col < 7; col++) {
-        //     if (newBoard[0][col] === "") {
-        //         value = 0
-        //         if (newBoard[0][col - 1] === "*") {
-        //             value++
-        //         }
-        //         if (newBoard[0][col + 1] === "*") {
-        //             value++
-        //         }
-        //         if (newBoard[1][col - 1] === "*") {
-        //             value++
-        //         }
-        //         if (newBoard[1][col] === "*") {
-        //             value++
-        //         }
-        //         if (newBoard[1][col + 1] === "*") {
-        //             value++
-        //         }
-        //     }
-        // }
-        // for (let i = 0; i < 8; i++) {
-        //     for (let j = 0; j < 8; j++) {
-        //         if (newBoard[i][j] !== "*") {
-                    
-        //         }
-        //     }
-        // }
     }
     
-    // console.log(putMines())
-    // console.log(putNumbers())
+    function generateTiles() {
+        const valuesBoard = putNumbers()
+        return valuesBoard.map(row => row.map(value => ({
+            id: nanoid(),
+            value: value,
+            isRevealed: false,
+            isFlagged: false
+        })))
+    }
+
+    function revealTile(tileId) {
+        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+            return tile.id === tileId && !tile.isFlagged
+                ? { ...tile, isRevealed: true }
+                : tile
+        })))
+    }
+
+    function flagTile(tileId) {
+        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+            return tile.id === tileId && !tile.isRevealed
+                ? { ...tile, isFlagged: !tile.isFlagged }
+                : tile
+        })))
+    }
+
+    React.useEffect(() => {
+        function handleContextMenu(e) {
+            e.preventDefault()
+        }
+        const root = document.getElementById("root")
+        root.addEventListener('contextmenu', handleContextMenu)
+        return () => {
+            root.removeEventListener('contextmenu', handleContextMenu)
+        }
+    }, [])
+
+    // React.useEffect(() => {
+    //     if (board.map(row => row.filter(tile => tile.value !== "*")))
+    // }, [board])
     
-    const numElements = board.map(row => row.map(tile => <div className="app--tile">{tile}</div>))
+    const tileElements = board.map(row => row.map(tile => <Tile 
+        key={tile.id}
+        value={tile.value}
+        isRevealed={tile.isRevealed}
+        revealTile={() => revealTile(tile.id)}
+        isFlagged={tile.isFlagged}
+        flagTile={() => flagTile(tile.id)}
+    />))
     
     return (
         <div>
@@ -153,7 +123,7 @@ export default function App() {
             </nav>
             <main className="app--main">
                 <div className="app--board-container">
-                    {numElements}
+                    {tileElements}
                 </div>
             </main>
         </div>
