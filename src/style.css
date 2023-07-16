@@ -1,0 +1,61 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+.app--nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.app--mine-counter {
+    width: 150px;
+    text-align: center;
+    font-family: Karla;
+}
+
+.app--game-button {
+    color: white;
+    background-color: red;
+    font-family: Karla, sans-serif;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.app--stopwatch {
+    width: 150px;
+    text-align: center;
+    font-family: Karla;
+}
+
+.app--main {
+    display: flex;
+    justify-content: center;
+}
+
+.app--board-container {
+    margin: 10px 20px;
+    border: 2px solid black;
+    width: 195px; 
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    grid-row-gap: 0px;
+}
+
+.app--board-container > div {
+    width: 24px;
+    height: 24px;
+    border: 2px solid black;
+}
+
+.app--tile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
