@@ -15,7 +15,19 @@ body {
 .app--mine-counter {
     width: 150px;
     text-align: center;
-    font-family: Karla;
+    font-family: Karla, sans-serif ;
+}
+
+.app--nav-middle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.app--outcome {
+    font-family: Karla, sans-serif;
 }
 
 .app--game-button {
@@ -24,13 +36,18 @@ body {
     font-family: Karla, sans-serif;
     border: none;
     border-radius: 5px;
-    padding: 5px;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.app--game-button:active {
+    background-color: orange;
 }
 
 .app--stopwatch {
     width: 150px;
     text-align: center;
-    font-family: Karla;
+    font-family: Karla, sans-serif;
 }
 
 .app--main {
@@ -58,4 +75,5 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: sans-serif;
 }

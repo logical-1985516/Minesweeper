@@ -5,7 +5,8 @@ import {nanoid} from "nanoid"
 
 export default function App() {
     const [board, setBoard] = React.useState(generateTiles())
-    const [gameStatus, setGameStatus] = React.useState("onGoing")
+    const [minesLeft, setMinesLeft] = React.useState(10)
+    const [gameStatus, setGameStatus] = React.useState("")
     
     function generateEmptyBoard() {
         const result = []
@@ -74,7 +75,12 @@ export default function App() {
         })))
     }
 
+    function loseGame() {
+        setGameStatus("lose")
+    }
+
     function revealTile(tileId) {
+        setGameStatus("onGoing")
         setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
             return tile.id === tileId && !tile.isFlagged
                 ? { ...tile, isRevealed: true }
@@ -83,10 +89,19 @@ export default function App() {
     }
 
     function flagTile(tileId) {
+        setGameStatus("onGoing")
         setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-            return tile.id === tileId && !tile.isRevealed
-                ? { ...tile, isFlagged: !tile.isFlagged }
-                : tile
+            if (tile.id !== tileId && !tile.isRevealed && tile.isFlagged) {
+                return tile
+            } else if (tile.id === tileId && !tile.isRevealed && !tile.isFlagged) {
+                setMinesLeft(oldMinesLeft => oldMinesLeft - 1)
+                return { ...tile, isFlagged: !tile.isFlagged }
+            } else if (tile.id === tileId && !tile.isRevealed && tile.isFlagged) {
+                setMinesLeft(oldMinesLeft => oldMinesLeft + 1)
+                return { ...tile, isFlagged: !tile.isFlagged }
+            } else {
+                return tile
+            }
         })))
     }
 
@@ -101,15 +116,34 @@ export default function App() {
         }
     }, [])
 
+    function resetBoard() {
+        setGameStatus("")
+        setMinesLeft(10)
+        setBoard(generateTiles())
+    }
+
     // React.useEffect(() => {
-    //     if (board.map(row => row.filter(tile => tile.value !== "*")))
-    // }, [board])
+    //     if (gameStatus === "lose") {
+    //         console.log("You Lost!")
+    //     }
+    // }, [gameStatus])
+
+    React.useEffect(() => {
+        if (board.every(row => 
+            row.every(tile => tile.value === "*" || tile.isRevealed))) {
+                setGameStatus("win")
+        }
+    }, [board])
     
     const tileElements = board.map(row => row.map(tile => <Tile 
         key={tile.id}
         value={tile.value}
         isRevealed={tile.isRevealed}
-        revealTile={() => revealTile(tile.id)}
+        revealTile={() => {
+            return tile.value === "*"
+                ? loseGame()
+                : revealTile(tile.id)
+        }}
         isFlagged={tile.isFlagged}
         flagTile={() => flagTile(tile.id)}
     />))
@@ -117,8 +151,16 @@ export default function App() {
     return (
         <div>
             <nav className="app--nav">
-                <div className="app--mine-counter">Mines left: 10</div>
-                <button className="app--game-button">Start/end game</button>
+                <div className="app--mine-counter">Mines left: {minesLeft}</div>
+                <div className="app--nav-middle">
+                    {gameStatus === "lose" 
+                        ? <div className="app--outcome">You Lost!</div>
+                        : gameStatus === "win" && <div className="app--outcome">You Won!</div>
+                    }
+                    <button className="app--game-button" onClick={resetBoard}>
+                        {gameStatus ? "New game" : "Start game"}
+                    </button>
+                </div>
                 <div className="app--stopwatch">Time: 0</div>
             </nav>
             <main className="app--main">
