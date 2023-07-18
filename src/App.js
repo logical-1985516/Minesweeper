@@ -25,7 +25,6 @@ export default function App() {
         for (let i = 0; i < 64; i++) {
             positions.push(i)
         }
-        console.log(positions)
         for (let i = 0; i < 10; i++) {
             const posIndex = Math.floor(positions.length * Math.random())
             const randomIndex = positions[posIndex]
@@ -67,42 +66,67 @@ export default function App() {
     
     function generateTiles() {
         const valuesBoard = putNumbers()
-        return valuesBoard.map(row => row.map(value => ({
-            id: nanoid(),
-            value: value,
-            isRevealed: false,
-            isFlagged: false
-        })))
-    }
-
-    function loseGame() {
-        setGameStatus("lose")
-    }
-
-    function revealTile(tileId) {
-        setGameStatus("onGoing")
-        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-            return tile.id === tileId && !tile.isFlagged
-                ? { ...tile, isRevealed: true }
-                : tile
-        })))
-    }
-
-    function flagTile(tileId) {
-        setGameStatus("onGoing")
-        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-            if (tile.id !== tileId && !tile.isRevealed && tile.isFlagged) {
-                return tile
-            } else if (tile.id === tileId && !tile.isRevealed && !tile.isFlagged) {
-                setMinesLeft(oldMinesLeft => oldMinesLeft - 1)
-                return { ...tile, isFlagged: !tile.isFlagged }
-            } else if (tile.id === tileId && !tile.isRevealed && tile.isFlagged) {
-                setMinesLeft(oldMinesLeft => oldMinesLeft + 1)
-                return { ...tile, isFlagged: !tile.isFlagged }
-            } else {
-                return tile
+        const tilesBoard = []
+        for (let i = 0; i < valuesBoard.length; i++) {
+            tilesBoard.push([])
+            for (let j = 0; j < valuesBoard[0].length; j++) {
+                tilesBoard[i].push({
+                    id: nanoid(),
+                    value: valuesBoard[i][j],
+                    row: i,
+                    column: j,
+                    isRevealed: false,
+                    isFlagged: false,
+                    isAutoRevealed: false,
+                    causedDefeat: false
+                })
             }
-        })))
+        }
+        return tilesBoard
+    }
+
+    function loseGame(tileId) {
+        if (gameStatus !== "lose") {
+            setGameStatus("lose")
+            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+                return tile.id === tileId
+                    ? {...tile, causedDefeat: true}
+                    : !tile.isRevealed || (tile.isFlagged && tile.value !== "*")
+                    ? {...tile, isAutoRevealed: true}
+                    : tile
+            })))
+        }
+    }
+
+    function revealTile(tileId, tileRow, tileColumn) {
+        if (gameStatus !== "win" && gameStatus !== "lose"
+        /*!board[tileRow][tileColumn].isRevealed && !board[tileRow][tileColumn].isAutoRevealed*/) {
+            setGameStatus("onGoing")
+            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+                return tile.id === tileId && !tile.isFlagged
+                    ? { ...tile, isRevealed: true }
+                    : tile
+            })))
+        }
+    }
+
+    function flagTile(tileId, tileRow, tileColumn) {
+        if (gameStatus !== "win" && gameStatus !== "lose") {
+            setGameStatus("onGoing")
+            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+                if (tile.id !== tileId) {
+                    return tile
+                } else if (tile.id === tileId && !tile.isRevealed && !tile.isFlagged) {
+                    setMinesLeft(oldMinesLeft => oldMinesLeft - 1)
+                    return { ...tile, isFlagged: !tile.isFlagged }
+                } else if (tile.id === tileId && !tile.isRevealed && tile.isFlagged) {
+                    setMinesLeft(oldMinesLeft => oldMinesLeft + 1)
+                    return { ...tile, isFlagged: !tile.isFlagged }
+                } else {
+                    return tile
+                }
+            })))
+        }
     }
 
     React.useEffect(() => {
@@ -122,30 +146,33 @@ export default function App() {
         setBoard(generateTiles())
     }
 
-    // React.useEffect(() => {
-    //     if (gameStatus === "lose") {
-    //         console.log("You Lost!")
-    //     }
-    // }, [gameStatus])
-
     React.useEffect(() => {
-        if (board.every(row => 
+        if (gameStatus !== "win" && board.every(row => 
             row.every(tile => tile.value === "*" || tile.isRevealed))) {
                 setGameStatus("win")
+                setMinesLeft(0)
+                setBoard(board.map(row => 
+                    row.map(tile => tile.value === "*" && !tile.isFlagged
+                        ? { ...tile, isAutoRevealed: true }
+                        : tile)))
         }
     }, [board])
     
     const tileElements = board.map(row => row.map(tile => <Tile 
         key={tile.id}
         value={tile.value}
+        row={tile.row}
+        column={tile.column}
         isRevealed={tile.isRevealed}
+        isAutoRevealed={tile.isAutoRevealed}
         revealTile={() => {
             return tile.value === "*"
-                ? loseGame()
-                : revealTile(tile.id)
+                ? loseGame(tile.id)
+                : revealTile(tile.id, tile.row, tile.column)
         }}
         isFlagged={tile.isFlagged}
-        flagTile={() => flagTile(tile.id)}
+        flagTile={() => flagTile(tile.id, tile.row, tile.column)}
+        causedDefeat={tile.causedDefeat}
     />))
     
     return (

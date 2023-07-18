@@ -69,6 +69,7 @@ body {
     width: 24px;
     height: 24px;
     border: 2px solid black;
+    user-select: none;
 }
 
 .tile {
