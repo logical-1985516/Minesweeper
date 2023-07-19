@@ -6,6 +6,7 @@ import {nanoid} from "nanoid"
 export default function App() {
     const [board, setBoard] = React.useState(generateTiles())
     const [minesLeft, setMinesLeft] = React.useState(10)
+    const [time, setTime] = React.useState(0)
     const [gameStatus, setGameStatus] = React.useState("")
     
     /**
@@ -199,7 +200,28 @@ export default function App() {
                     return
                 }
                 if (!newBoard[row][col].isRevealed && !newBoard[row][col].isFlagged) {
-                    newBoard[row][col].isRevealed = true
+                    if (newBoard[row][col].value === 0) {
+                        function DFS(row, col) {
+                            if (row < 0 || row === newBoard.length || col < 0 || 
+                                col === newBoard[0].length || newBoard[row][col].isRevealed) {
+                                return
+                            }
+                            newBoard[row][col] = {...newBoard[row][col], isRevealed: true}
+                            if (newBoard[row][col].value === 0) {
+                                DFS(row - 1, col - 1)
+                                DFS(row, col - 1)
+                                DFS(row + 1, col - 1)
+                                DFS(row - 1, col)
+                                DFS(row + 1, col)
+                                DFS(row - 1, col + 1)
+                                DFS(row, col + 1)
+                                DFS(row + 1, col + 1)
+                            }
+                        }
+                        DFS(row, col)
+                    } else {
+                        newBoard[row][col].isRevealed = true
+                    }
                 }
             }
             updateTile(tileRow - 1, tileColumn - 1)
@@ -212,6 +234,44 @@ export default function App() {
             updateTile(tileRow + 1, tileColumn + 1)
             setBoard(newBoard)
         }
+    }
+    
+    /**
+     * 1. Performs a DFS on the zeroes.
+     * 2. Search for its 8 surrounding tiles, revealing it and marking it as
+     * visited for each tile (note: isRevealed doubles down as visited)
+     * 3. If a tile is visited or is a number, terminate for that fn call.
+     * @param {number} tileRow row of the tile
+     * @param {number} tileCol column of the tile
+     */
+    function revealZeroesAroundTile(tileRow, tileCol) {
+        const newBoard = []
+            for (let i = 0; i < 8; i++) {
+                newBoard.push([])
+                for (let j = 0; j < 8; j++) {
+                    newBoard[i].push(board[i][j])
+                }
+            }
+        function DFS(row, col) {
+            if (row < 0 || row === newBoard.length || col < 0 || 
+                col === newBoard[0].length || newBoard[row][col].isRevealed) {
+                return
+            }
+            newBoard[row][col] = {...newBoard[row][col], isRevealed: true}
+            if (newBoard[row][col].value === 0) {
+                DFS(row - 1, col - 1)
+                DFS(row, col - 1)
+                DFS(row + 1, col - 1)
+                DFS(row - 1, col)
+                DFS(row + 1, col)
+                DFS(row - 1, col + 1)
+                DFS(row, col + 1)
+                DFS(row + 1, col + 1)
+            }
+        }
+        DFS(tileRow, tileCol)
+        setGameStatus("onGoing")
+        setBoard(newBoard)
     }
 
     /**
@@ -257,6 +317,7 @@ export default function App() {
     function resetBoard() {
         setGameStatus("")
         setMinesLeft(10)
+        setTime(0)
         setBoard(generateTiles())
     }
 
@@ -286,6 +347,19 @@ export default function App() {
                     : tile)))
         }
     }, [board])
+
+    /**
+     * If the game is onGoing, have a timer that increments every second
+     * If the game is won or lost, stop the timer
+     */
+    React.useEffect(() => {
+        if (gameStatus === "onGoing") {
+            const runTimer = setInterval(() => {
+                setTime(oldTime => oldTime + 1)
+            }, 1000)
+            return () => clearInterval(runTimer)
+        }
+    }, [gameStatus])
     
     /**
      * The event props, revealTile and flagTile, should contain checks that
@@ -306,6 +380,8 @@ export default function App() {
                 ? null
                 : tile.isRevealed
                 ? chord(tile.row, tile.column)
+                : tile.value === 0
+                ? revealZeroesAroundTile(tile.row, tile.column)
                 : revealTile(tile.id)
         }}
         isFlagged={tile.isFlagged}
@@ -329,7 +405,7 @@ export default function App() {
                         {gameStatus ? "New game" : "Start game"}
                     </button>
                 </div>
-                <div className="app--stopwatch">Time: 0</div>
+                <div className="app--stopwatch">Time: {time}</div>
             </nav>
             <main className="app--main">
                 <div className="app--board-container">
