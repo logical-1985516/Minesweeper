@@ -8,6 +8,10 @@ export default function App() {
     const [minesLeft, setMinesLeft] = React.useState(10)
     const [gameStatus, setGameStatus] = React.useState("")
     
+    /**
+     * This and the next 3 functions combine to initialise the board
+     * @returns empty board of the correct size
+     */
     function generateEmptyBoard() {
         const result = []
         for (let i = 0; i < 8; i++) {
@@ -19,6 +23,16 @@ export default function App() {
         return result
     }
     
+    /**
+     * 1. Maps the indexes of the 2d array to a 1d array of the same size.
+     * 2. Randomly selects a random index of the 1d array (whose value 
+     * corresponds to the index of the 2d array).
+     * 3. Put a mine on the corresponding index of the 2d array and 
+     * remove that random index of the 1d array (so that it is without 
+     * replacement)
+     * 4. Repeat until there is a certain # of mines on the 2d array.
+     * @returns board with just the mines that are randomly scattered
+     */
     function putMines() {
         const minesBoard = generateEmptyBoard()
         let positions = []
@@ -37,9 +51,26 @@ export default function App() {
         return minesBoard
     }
     
+    /**
+     * 
+     * @returns board of values
+     */
     function putNumbers() {
         const newBoard = putMines()
-        function findMinesAroundIt(row, col) {
+        /**
+         * Checks if each of the surrounding tiles is a mine, then find the
+         * sum of the result.
+         * @param {number} row row of the tile
+         * @param {number} col column of the tile
+         * @returns {number} # of mines around the tile
+         */
+        function findMinesAroundTile(row, col) {
+            /**
+             * 
+             * @param {number} row row of the tile
+             * @param {number} col column of the tile
+             * @returns {number} 1 if the tile is a mine, 0 otherwise
+             */
             function isMine(row, col) {
                 if (row < 0 || row == newBoard.length || 
                     col < 0 || col == newBoard[0].length) {
@@ -57,20 +88,22 @@ export default function App() {
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
                 if (newBoard[i][j] === "") {
-                    newBoard[i][j] = findMinesAroundIt(i, j)
+                    newBoard[i][j] = findMinesAroundTile(i, j)
                 }
             }
         }
         return newBoard
     }
     
+    /**
+     * 
+     * @returns board with the properties of the tiles
+     */
     function generateTiles() {
         const valuesBoard = putNumbers()
-        const tilesBoard = []
         for (let i = 0; i < valuesBoard.length; i++) {
-            tilesBoard.push([])
             for (let j = 0; j < valuesBoard[0].length; j++) {
-                tilesBoard[i].push({
+                valuesBoard[i][j] = {
                     id: nanoid(),
                     value: valuesBoard[i][j],
                     row: i,
@@ -78,85 +111,61 @@ export default function App() {
                     isRevealed: false,
                     isFlagged: false,
                     isAutoRevealed: false,
-                    causedDefeat: false
-                })
-            }
-        }
-        return tilesBoard
-    }
-
-    function loseGame(tileRow, tileColumn) {
-        if (gameStatus !== "lose" && gameStatus !== "win") {
-            setGameStatus("lose")
-            const newBoard = []
-            for (let i = 0; i < 8; i++) {
-                newBoard.push([])
-                for (let j = 0; j < 8; j++) {
-                    i === tileRow && j === tileColumn
-                        ? newBoard[i].push({...board[i][j], causedDefeat: true})
-                        : !board[i][j].isRevealed || (board[i][j].isFlagged && board[i][j].value !== "*")
-                        ? newBoard[i].push({...board[i][j], isAutoRevealed: true}) 
-                        : newBoard[i].push(board[i][j])
                 }
             }
-            setBoard(newBoard)
+        }
+        return valuesBoard
+    }
+
+    /**
+     * Autoreveals: 
+     * 1. unrevealed numbers
+     * 2. unflagged and unrevealed mines
+     * 3. wrongly flagged tiles
+     */
+    function loseGame() {
+        if (gameStatus !== "lose" && gameStatus !== "win") {
+            setGameStatus("lose")
+            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+                return (!tile.isRevealed && tile.value !== "*") || 
+                (!tile.isFlagged && !tile.isRevealed && tile.value === "*") ||
+                (tile.isFlagged && tile.value !== "*")
+                    ? {...tile, isAutoRevealed: true}
+                    : tile
+            })))
         }
     }
 
-    function revealTile(tileRow, tileColumn) {
-        if (tileRow < 0 || tileRow > 7 || tileColumn < 0 || tileColumn > 7) {
-            return
-        }
+    function revealTile(tileId) {
         if (gameStatus === "win" || gameStatus === "lose") {
             return
         }
-        /*!board[tileRow][tileColumn].isRevealed && !board[tileRow][tileColumn].isAutoRevealed*/
-        // if (!board[tileRow][tileColumn].isRevealed) {
-        if (board[tileRow][tileColumn].value === "*") {
-            return loseGame(tileRow, tileColumn)
-        }
         setGameStatus("onGoing")
-        const newBoard = []
-        for (let i = 0; i < 8; i++) {
-            newBoard.push([])
-            for (let j = 0; j < 8; j++) {
-                i === tileRow && j === tileColumn
-                    ? newBoard[i].push({...board[i][j], isRevealed: true})
-                    : newBoard[i].push(board[i][j])
-            }
-        }
-        setBoard(newBoard)
-        // setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-        //     return tile.id === tileId && !tile.isFlagged
-        //         ? { ...tile, isRevealed: true }
-        //         : tile
-        // })))
-        // } else {
-        //     function flagsAroundTile(row, col) {
-        //         function isFlag(row, col) {
-        //             if (row < 0 || row == board.length || col < 0 || board[0].length) {
-        //                 return 0
-        //             }
-        //             return board[row][col].isFlagged
-        //                 ? 1
-        //                 : 0
-        //         }
-        //         return isFlag(row - 1, col - 1) + isFlag(row, col - 1) +
-        //             isFlag(row + 1, col - 1) + isFlag(row - 1, col) + 
-        //             isFlag(row + 1, col) + isFlag(row - 1, col + 1) +
-        //             isFlag(row, col + 1) + isFlag(row + 1, col + 1)
-        //     }
-        //     if (board[tileRow][tileColumn].value === flagsAroundTile(tileRow, tileColumn)) {
-                
-        //     }
-        // }
+        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+            return tile.id === tileId
+                ? {...tile, isRevealed: true}
+                : tile
+        })))
     }
 
+    /**
+     * If # of flags around it is equal to its number:
+     * 1. Create a copy of the board
+     * 2. Update the surrounding tiles (done by a helper function updateTile)
+     * @param {number} tileRow row of the tile
+     * @param {number} tileColumn column of the tile
+     */
     function chord(tileRow, tileColumn) {
         if (gameStatus === "win" || gameStatus === "lose") {
             return
         }
-        function flagsAroundTile(row, col) {
+        /**
+         * Similar to minesAroundTile.
+         * @param {number} row row of the tile
+         * @param {number} col column of the tile
+         * @returns # of flags around the tile
+         */
+        function findFlagsAroundTile(row, col) {
             function isFlag(row, col) {
                 if (row < 0 || row == board.length || col < 0 || col === board[0].length) {
                     return 0
@@ -170,7 +179,7 @@ export default function App() {
                 isFlag(row + 1, col) + isFlag(row - 1, col + 1) +
                 isFlag(row, col + 1) + isFlag(row + 1, col + 1)
         }
-        if (board[tileRow][tileColumn].value === flagsAroundTile(tileRow, tileColumn)) {
+        if (board[tileRow][tileColumn].value === findFlagsAroundTile(tileRow, tileColumn)) {
             const newBoard = []
             for (let i = 0; i < 8; i++) {
                 newBoard.push([])
@@ -178,16 +187,19 @@ export default function App() {
                     newBoard[i].push(board[i][j])
                 }
             }
+            /**
+             * Reveals the tile under 2 conditions:
+             * 1. It is not revealed
+             * 2. It is not flagged
+             * @param {number} row row of the tile
+             * @param {number} col column of the tile
+             */
             function updateTile(row, col) {
                 if (row < 0 || row == newBoard.length || col < 0 || col === newBoard[0].length) {
                     return
                 }
                 if (!newBoard[row][col].isRevealed && !newBoard[row][col].isFlagged) {
-                    // if (newBoard[row][col].value === "*") {
-                    //     return loseGame(row, col)
-                    // } else {
                     newBoard[row][col].isRevealed = true
-                    // }
                 }
             }
             updateTile(tileRow - 1, tileColumn - 1)
@@ -199,24 +211,17 @@ export default function App() {
             updateTile(tileRow + 1, tileColumn)
             updateTile(tileRow + 1, tileColumn + 1)
             setBoard(newBoard)
-            // for (let i = -1; i < 2; i++) {
-            //     for (let j = -1; j < 2; j++) {
-            //         if (!board[tileRow][tileColumn].isRevealed) {
-            //         }
-            //     }
-            // }
-            // revealTile(tileRow - 1, tileColumn - 1)
-            // revealTile(tileRow - 1, tileColumn)
-            // revealTile(tileRow - 1, tileColumn + 1)
-            // revealTile(tileRow, tileColumn - 1)
-            // revealTile(tileRow, tileColumn + 1)
-            // revealTile(tileRow + 1, tileColumn - 1)
-            // revealTile(tileRow + 1, tileColumn)
-            // revealTile(tileRow + 1, tileColumn + 1)
         }
     }
 
-    function flagTile(tileId, tileRow, tileColumn) {
+    /**
+     * With reference to the tile to be flagged:
+     * If it is not revealed and not flagged, flag it
+     * If it is not revealed and flagged, unflag it
+     * If it is revealed, do nothing
+     * @param {string} tileId id of the tile (created by nanoid)
+     */
+    function flagTile(tileId) {
         if (gameStatus !== "win" && gameStatus !== "lose") {
             setGameStatus("onGoing")
             setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
@@ -224,10 +229,10 @@ export default function App() {
                     return tile
                 } else if (tile.id === tileId && !tile.isRevealed && !tile.isFlagged) {
                     setMinesLeft(oldMinesLeft => oldMinesLeft - 1)
-                    return { ...tile, isFlagged: !tile.isFlagged }
+                    return { ...tile, isFlagged: true }
                 } else if (tile.id === tileId && !tile.isRevealed && tile.isFlagged) {
                     setMinesLeft(oldMinesLeft => oldMinesLeft + 1)
-                    return { ...tile, isFlagged: !tile.isFlagged }
+                    return { ...tile, isFlagged: false }
                 } else {
                     return tile
                 }
@@ -235,6 +240,9 @@ export default function App() {
         }
     }
 
+    /**
+     * Removes the context menu upon right click
+     */
     React.useEffect(() => {
         function handleContextMenu(e) {
             e.preventDefault()
@@ -252,24 +260,23 @@ export default function App() {
         setBoard(generateTiles())
     }
 
-    function checkLose() {
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                if (board[i][j].value === "*" && board[i][j].isRevealed) {
-                    return loseGame(i, j)
-                }
-            }
-        }
-    }
-
+    /**
+     * if we haven't win nor lose the game:
+     * if the board contains a revealed mine, the game is lost
+     */
     React.useEffect(() => {
-        if (gameStatus !== "lose" && gameStatus !== "win") {
-            checkLose()
+        if (gameStatus !== "lose" && gameStatus !== "win" &&
+        board.some(row => row.some(tile => tile.value === "*" && tile.isRevealed))) {
+            loseGame()
         }
     }, [board])
 
+    /**
+     * if we haven't win nor lose the game:
+     * if the all the numbers are revealed, the game is won
+     */
     React.useEffect(() => {
-        if (gameStatus !== "win" && board.every(row => 
+        if (gameStatus !== "win" && gameStatus !== "lose" && board.every(row => 
             row.every(tile => tile.value === "*" || tile.isRevealed))) {
             setGameStatus("win")
             setMinesLeft(0)
@@ -280,6 +287,13 @@ export default function App() {
         }
     }, [board])
     
+    /**
+     * The event props, revealTile and flagTile, should contain checks that
+     * access the props themselves (i.e. tile.isFlagged, tile.isRevealed).
+     * 
+     * Checks that access the state variables (e.g. gameStatus) should be done
+     * within the functions themselves (e.g. revealTile checks the gameStatus)
+     */
     const tileElements = board.map(row => row.map(tile => <Tile 
         key={tile.id}
         value={tile.value}
@@ -292,15 +306,14 @@ export default function App() {
                 ? null
                 : tile.isRevealed
                 ? chord(tile.row, tile.column)
-                : revealTile(tile.row, tile.column)
+                : revealTile(tile.id)
         }}
         isFlagged={tile.isFlagged}
         flagTile={() => {
             return tile.isRevealed
                 ? null
-                : flagTile(tile.id, tile.row, tile.column)
+                : flagTile(tile.id)
         }}
-        causedDefeat={tile.causedDefeat}
     />))
     
     return (
