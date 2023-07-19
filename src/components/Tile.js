@@ -11,7 +11,7 @@ export default function Tile(props) {
             : props.isFlagged
             ? "orange"
             : props.isRevealed 
-            ? (props.value === "*" ? "red" : "lime") 
+            ? (props.value === "*" ? "darkred" : "lime") 
             : "white"
     }
     return (
