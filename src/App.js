@@ -1,4 +1,7 @@
 import React from "react"
+import Navbar from "./components/Navbar"
+import Header from "./components/Header"
+import Board from "./components/Board"
 import Tile from "./components/Tile"
 import "./style.css"
 import {nanoid} from "nanoid"
@@ -394,7 +397,13 @@ export default function App() {
     
     return (
         <div>
-            <nav className="app--nav">
+            <Header 
+                minesLeft={minesLeft}
+                gameStatus={gameStatus}
+                resetBoard={resetBoard}
+                time={time}
+            />
+            {/* <nav className="app--nav">
                 <div className="app--mine-counter">Mines left: {minesLeft}</div>
                 <div className="app--nav-middle">
                     {gameStatus === "lose" 
@@ -406,12 +415,19 @@ export default function App() {
                     </button>
                 </div>
                 <div className="app--stopwatch">Time: {time}</div>
-            </nav>
-            <main className="app--main">
+            </nav> */}
+            <Board 
+                board={board}
+                chord={chord}
+                revealZeroesAroundTile={revealZeroesAroundTile}
+                revealTile={revealTile}
+                flagTile={flagTile}
+            />
+            {/* <main className="app--main">
                 <div className="app--board-container">
                     {tileElements}
                 </div>
-            </main>
+            </main> */}
         </div>
     )
 }
