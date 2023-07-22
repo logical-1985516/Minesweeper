@@ -6,10 +6,11 @@ import "./style.css"
 import {nanoid} from "nanoid"
 
 export default function App() {
-    const [board, setBoard] = React.useState(generateTiles())
-    const [width, setWidth] = React.useState(8)
     const [height, setHeight] = React.useState(8)
+    const [width, setWidth] = React.useState(8)
+    const [initialMines, setInitialMines] = React.useState(10)
     const [minesLeft, setMinesLeft] = React.useState(10)
+    const [board, setBoard] = React.useState(generateTiles())
     const [time, setTime] = React.useState(0)
     const [gameStatus, setGameStatus] = React.useState("")
     
@@ -19,9 +20,9 @@ export default function App() {
      */
     function generateEmptyBoard() {
         const result = []
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < height; i++) {
             result.push([])
-            for (let j = 0; j < 8; j++) {
+            for (let j = 0; j < width; j++) {
                 result[i].push("")
             }
         }
@@ -41,14 +42,14 @@ export default function App() {
     function putMines() {
         const minesBoard = generateEmptyBoard()
         let positions = []
-        for (let i = 0; i < 64; i++) {
+        for (let i = 0; i < height * width; i++) {
             positions.push(i)
         }
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < initialMines; i++) {
             const posIndex = Math.floor(positions.length * Math.random())
             const randomIndex = positions[posIndex]
-            const row = Math.floor(randomIndex / 8)
-            const col = randomIndex % 8
+            const row = Math.floor(randomIndex / width)
+            const col = randomIndex % width
             minesBoard[row][col] = "*"
             positions = positions.slice(0, posIndex)
                 .concat(positions.slice(posIndex + 1, positions.length))
@@ -90,8 +91,8 @@ export default function App() {
                 isMine(row + 1, col) + isMine(row - 1, col + 1) +
                 isMine(row, col + 1) + isMine(row + 1, col + 1)
         }
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
+        for (let i = 0; i < newBoard.length; i++) {
+            for (let j = 0; j < newBoard[0].length; j++) {
                 if (newBoard[i][j] === "") {
                     newBoard[i][j] = findMinesAroundTile(i, j)
                 }
@@ -186,9 +187,9 @@ export default function App() {
         }
         if (board[tileRow][tileColumn].value === findFlagsAroundTile(tileRow, tileColumn)) {
             const newBoard = []
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < height; i++) {
                 newBoard.push([])
-                for (let j = 0; j < 8; j++) {
+                for (let j = 0; j < width; j++) {
                     newBoard[i].push(board[i][j])
                 }
             }
@@ -250,9 +251,9 @@ export default function App() {
      */
     function revealZeroesAroundTile(tileRow, tileCol) {
         const newBoard = []
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < height; i++) {
                 newBoard.push([])
-                for (let j = 0; j < 8; j++) {
+                for (let j = 0; j < width; j++) {
                     newBoard[i].push(board[i][j])
                 }
             }
@@ -320,19 +321,20 @@ export default function App() {
 
     function resetBoard() {
         setGameStatus("")
-        setMinesLeft(10)
+        setMinesLeft(initialMines)
         setTime(0)
         setBoard(generateTiles())
     }
 
-    function changeBoardProperties(width, height, mines) {
-        setWidth(width)
+    function changeBoardProperties(height, width, mines) {
         setHeight(height)
-        setMinesLeft(mines)
-        console.log(width)
-        console.log(height)
-        console.log(minesLeft)
+        setWidth(width)
+        setInitialMines(mines)
     }
+
+    React.useEffect(() => {
+        resetBoard()
+    }, [height, width, initialMines])
 
     /**
      * if we haven't win nor lose the game:
@@ -387,6 +389,8 @@ export default function App() {
             />
             <Board 
                 board={board}
+                height={height}
+                width={width}
                 chord={chord}
                 revealZeroesAroundTile={revealZeroesAroundTile}
                 revealTile={revealTile}
