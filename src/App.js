@@ -2,12 +2,13 @@ import React from "react"
 import Navbar from "./components/Navbar"
 import Header from "./components/Header"
 import Board from "./components/Board"
-import Tile from "./components/Tile"
 import "./style.css"
 import {nanoid} from "nanoid"
 
 export default function App() {
     const [board, setBoard] = React.useState(generateTiles())
+    const [width, setWidth] = React.useState(8)
+    const [height, setHeight] = React.useState(8)
     const [minesLeft, setMinesLeft] = React.useState(10)
     const [time, setTime] = React.useState(0)
     const [gameStatus, setGameStatus] = React.useState("")
@@ -76,11 +77,11 @@ export default function App() {
              * @returns {number} 1 if the tile is a mine, 0 otherwise
              */
             function isMine(row, col) {
-                if (row < 0 || row == newBoard.length || 
-                    col < 0 || col == newBoard[0].length) {
+                if (row < 0 || row === newBoard.length || 
+                    col < 0 || col === newBoard[0].length) {
                     return 0
                 }
-                return newBoard[row][col] == "*"
+                return newBoard[row][col] === "*"
                     ? 1
                     : 0
             }
@@ -171,7 +172,7 @@ export default function App() {
          */
         function findFlagsAroundTile(row, col) {
             function isFlag(row, col) {
-                if (row < 0 || row == board.length || col < 0 || col === board[0].length) {
+                if (row < 0 || row === board.length || col < 0 || col === board[0].length) {
                     return 0
                 }
                 return board[row][col].isFlagged
@@ -199,7 +200,7 @@ export default function App() {
              * @param {number} col column of the tile
              */
             function updateTile(row, col) {
-                if (row < 0 || row == newBoard.length || col < 0 || col === newBoard[0].length) {
+                if (row < 0 || row === newBoard.length || col < 0 || col === newBoard[0].length) {
                     return
                 }
                 if (!newBoard[row][col].isRevealed && !newBoard[row][col].isFlagged) {
@@ -324,6 +325,15 @@ export default function App() {
         setBoard(generateTiles())
     }
 
+    function changeBoardProperties(width, height, mines) {
+        setWidth(width)
+        setHeight(height)
+        setMinesLeft(mines)
+        console.log(width)
+        console.log(height)
+        console.log(minesLeft)
+    }
+
     /**
      * if we haven't win nor lose the game:
      * if the board contains a revealed mine, the game is lost
@@ -364,58 +374,17 @@ export default function App() {
         }
     }, [gameStatus])
     
-    /**
-     * The event props, revealTile and flagTile, should contain checks that
-     * access the props themselves (i.e. tile.isFlagged, tile.isRevealed).
-     * 
-     * Checks that access the state variables (e.g. gameStatus) should be done
-     * within the functions themselves (e.g. revealTile checks the gameStatus)
-     */
-    const tileElements = board.map(row => row.map(tile => <Tile 
-        key={tile.id}
-        value={tile.value}
-        row={tile.row}
-        column={tile.column}
-        isRevealed={tile.isRevealed}
-        isAutoRevealed={tile.isAutoRevealed}
-        revealTile={() => {
-            return tile.isFlagged
-                ? null
-                : tile.isRevealed
-                ? chord(tile.row, tile.column)
-                : tile.value === 0
-                ? revealZeroesAroundTile(tile.row, tile.column)
-                : revealTile(tile.id)
-        }}
-        isFlagged={tile.isFlagged}
-        flagTile={() => {
-            return tile.isRevealed
-                ? null
-                : flagTile(tile.id)
-        }}
-    />))
-    
     return (
         <div>
+            <Navbar 
+                changeBoardProperties={changeBoardProperties}
+            />
             <Header 
                 minesLeft={minesLeft}
                 gameStatus={gameStatus}
                 resetBoard={resetBoard}
                 time={time}
             />
-            {/* <nav className="app--nav">
-                <div className="app--mine-counter">Mines left: {minesLeft}</div>
-                <div className="app--nav-middle">
-                    {gameStatus === "lose" 
-                        ? <div className="app--outcome">You Lost!</div>
-                        : gameStatus === "win" && <div className="app--outcome">You Won!</div>
-                    }
-                    <button className="app--game-button" onClick={resetBoard}>
-                        {gameStatus ? "New game" : "Start game"}
-                    </button>
-                </div>
-                <div className="app--stopwatch">Time: {time}</div>
-            </nav> */}
             <Board 
                 board={board}
                 chord={chord}
@@ -423,11 +392,6 @@ export default function App() {
                 revealTile={revealTile}
                 flagTile={flagTile}
             />
-            {/* <main className="app--main">
-                <div className="app--board-container">
-                    {tileElements}
-                </div>
-            </main> */}
         </div>
     )
 }
