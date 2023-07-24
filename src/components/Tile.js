@@ -5,6 +5,8 @@ export default function Tile(props) {
         backgroundColor: props.isAutoRevealed
             ? (props.isFlagged && props.value !== "*"
                 ? "red"
+                : props.value === "*"
+                ? "#777777"
                 : "lightgrey")
             : props.isFlagged
             ? "orange"
@@ -15,15 +17,7 @@ export default function Tile(props) {
     return (
         <div className="tile" style={styles} 
             onClick={props.revealTile}
-                // () => {
-                // if (!props.isAutoRevealed && !props.isRevealed && !props.isFlagged) {
-                //     return props.revealTile
-                // }}}
             onContextMenu={props.flagTile}
-            //     () => {
-            //     if (!props.isAutoRevealed && !props.isRevealed) {
-            //         return props.flagTile
-            // }}}
         >
             {(props.isRevealed || props.isAutoRevealed || props.causedDefeat) && props.value !== 0 && <span>{props.value}</span>}
         </div>
