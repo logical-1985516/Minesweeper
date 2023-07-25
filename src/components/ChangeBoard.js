@@ -1,7 +1,8 @@
 import React from "react"
 
 export default function ChangeBoard(props) {
-    const [currentBoard, setCurrentBoard] = React.useState({
+    const [currentBoard, setCurrentBoard] = React.useState(
+        JSON.parse(localStorage.getItem("currentBoard")) || {
         difficulty: "Beginner",
         height: 8,
         width: 8,
@@ -66,6 +67,10 @@ export default function ChangeBoard(props) {
             mines: ""
         })
     }
+
+    React.useEffect(() => {
+        localStorage.setItem("currentBoard", JSON.stringify(currentBoard))
+    }, [currentBoard])
 
     return (
         <div className="changeBoard--container">
