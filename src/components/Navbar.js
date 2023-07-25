@@ -20,10 +20,17 @@ export default function Navbar(props) {
             : setItemOpen("settings")
     }
     return (
-        <nav>
-            <span>Minesweeper</span>
-            <button onClick={toggleShowChangeBoard}>Change Board</button>
-            <button onClick={toggleShowSettings}>Settings</button>
+        <nav className="navbar--container">
+            <div className="navbar--title">
+                <span>Minesweeper</span>
+                <button onClick={toggleShowChangeBoard} className="navbar--button">
+                    Change Board
+                </button>
+                <button onClick={toggleShowSettings} className="navbar--button">
+                    Settings
+                </button>
+            </div>
+            <div className="navbar--item">
             {itemOpen === "changeBoard" && 
             <ChangeBoard 
                 changeBoardProperties={changeBoardProperties}
@@ -36,6 +43,7 @@ export default function Navbar(props) {
                 <label>Sound</label>
             </form>
             }
+            </div>
         </nav>
     )
 }
