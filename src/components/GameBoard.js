@@ -1,6 +1,7 @@
 import React from "react"
 import Header from "./Header"
 import Board from "./Board"
+import GameResult from "./GameResult"
 import {nanoid} from "nanoid"
 
 export default function GameBoard(props) {
@@ -10,6 +11,8 @@ export default function GameBoard(props) {
     const [minesLeft, setMinesLeft] = React.useState(props.mines)
     const [board, setBoard] = React.useState(generateTiles())
     const [time, setTime] = React.useState(0)
+    const [startTime, setStartTime] = React.useState()
+    const [endTime, setEndTime] = React.useState()
     const [gameStatus, setGameStatus] = React.useState("")
     
     /**
@@ -119,6 +122,54 @@ export default function GameBoard(props) {
             }
         }
         return valuesBoard
+    }
+
+    /**
+     * 
+     * @returns minimum number of clicks to win the game
+     */
+    function find3BV() {
+        const visited = []
+        let threeBV = 0
+        for (let i = 0; i < height; i++) {
+            visited.push([])
+            for (let j = 0; j < width; j++) {
+                visited[i].push(false)
+            }
+        }
+        function DFS(row, col) {
+            if (row < 0 || row === height || col < 0 || col === width ||
+                visited[row][col]) {
+                return
+            }
+            visited[row][col] = true
+            if (board[row][col].value === 0) {
+                DFS(row - 1, col - 1)
+                DFS(row, col - 1)
+                DFS(row + 1, col - 1)
+                DFS(row - 1, col)
+                DFS(row + 1, col)
+                DFS(row - 1, col + 1)
+                DFS(row, col + 1)
+                DFS(row + 1, col + 1)
+            }
+        }
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                if (board[i][j].value === 0 && !visited[i][j]) {
+                    DFS(i, j)
+                    threeBV++
+                }
+            }
+        }
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                if (!visited[i][j] && board[i][j].value !== "*") {
+                    threeBV++
+                }
+            }
+        }
+        return threeBV
     }
 
     function revealTile(tileId) {
@@ -333,6 +384,7 @@ export default function GameBoard(props) {
             const runTimer = setInterval(() => {
                 setTime(oldTime => oldTime + 1)
             }, 1000)
+            setStartTime(Date.now())
             return () => clearInterval(runTimer)
         }
     }, [gameStatus])
@@ -344,6 +396,7 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         if (gameStatus !== "lose" && gameStatus !== "win" &&
         board.some(row => row.some(tile => tile.value === "*" && tile.isRevealed))) {
+            setEndTime(Date.now())
             loseGame()
         }
     }, [board])
@@ -355,12 +408,14 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         if (gameStatus !== "win" && gameStatus !== "lose" && board.every(row => 
             row.every(tile => tile.value === "*" || tile.isRevealed))) {
+            setEndTime(Date.now())
             setGameStatus("win")
             setMinesLeft(0)
             setBoard(board.map(row => 
                 row.map(tile => tile.value === "*" && !tile.isFlagged
                     ? { ...tile, isAutoRevealed: true }
                     : tile)))
+            
         }
     }, [board])
 
@@ -389,6 +444,11 @@ export default function GameBoard(props) {
                 revealTile={revealTile}
                 flagTile={flagTile}
             />
+            {(gameStatus === "win" || gameStatus === "lose") && 
+            <GameResult 
+                time={(endTime - startTime) / 1000}
+                threeBV={find3BV()}
+            />}
         </div>
     )
 }

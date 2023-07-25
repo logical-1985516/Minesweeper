@@ -161,3 +161,9 @@ body {
     justify-content: center;
     align-items: center;
 }
+
+.gameResult--container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
