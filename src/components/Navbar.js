@@ -30,7 +30,6 @@ export default function Navbar(props) {
 
     function handleSubmit(event) {
         event.preventDefault()
-        console.log(boardProperties)
         if (boardProperties.height > 0 && boardProperties.height <= 30 &&
             boardProperties.width > 0 && boardProperties.width <= 30 &&
             boardProperties.mines > 0 &&

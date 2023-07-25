@@ -2,18 +2,18 @@ import React from "react"
 
 export default function Header(props) {
     return (
-        <nav className="app--nav">
-            <div className="app--mine-counter">Mines left: {props.minesLeft}</div>
-            <div className="app--nav-middle">
+        <nav className="header--container">
+            <div className="header--mine-counter">Mines left: {props.minesLeft}</div>
+            <div className="header--middle">
                 {props.gameStatus === "lose" 
-                    ? <div className="app--outcome">You Lost!</div>
-                    : props.gameStatus === "win" && <div className="app--outcome">You Won!</div>
+                    ? <div className="header--outcome">You Lost!</div>
+                    : props.gameStatus === "win" && <div className="header--outcome">You Won!</div>
                 }
-                <button className="app--game-button" onClick={props.resetBoard}>
+                <button className="header--game-button" onClick={props.resetBoard}>
                     {props.gameStatus ? "New game" : "Start game"}
                 </button>
             </div>
-            <div className="app--stopwatch">Time: {props.time}</div>
+            <div className="header--stopwatch">Time: {props.time}</div>
         </nav>
     )
 }

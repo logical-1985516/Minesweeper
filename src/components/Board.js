@@ -1,7 +1,7 @@
 import React from "react"
 import Tile from "./Tile"
 
-export default function Board(props) {  
+export default function Board(props) {
     const tileElements = props.board.map(row => row.map(tile => <Tile 
         key={tile.id}
         value={tile.value}
@@ -33,8 +33,8 @@ export default function Board(props) {
     }
 
     return (
-        <main className="app--main">
-            <div className="app--board-container" style={styles}>
+        <main className="board--container">
+            <div className="board--outline" style={styles}>
                 {tileElements}
             </div>
         </main>

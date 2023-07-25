@@ -6,19 +6,19 @@ body {
     margin: 0;
 }
 
-.app--nav {
+.header--container {
     display: flex;
     justify-content: space-between;
     padding: 20px;
 }
 
-.app--mine-counter {
+.header--mine-counter {
     width: 150px;
     text-align: center;
     font-family: Karla, sans-serif ;
 }
 
-.app--nav-middle {
+.header--middle {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -26,11 +26,11 @@ body {
     gap: 10px;
 }
 
-.app--outcome {
+.header--outcome {
     font-family: Karla, sans-serif;
 }
 
-.app--game-button {
+.header--game-button {
     color: white;
     background-color: red;
     font-family: Karla, sans-serif;
@@ -40,22 +40,22 @@ body {
     font-size: 20px;
 }
 
-.app--game-button:active {
+.header--game-button:active {
     background-color: orange;
 }
 
-.app--stopwatch {
+.header--stopwatch {
     width: 150px;
     text-align: center;
     font-family: Karla, sans-serif;
 }
 
-.app--main {
+.board--container {
     display: flex;
     justify-content: center;
 }
 
-.app--board-container {
+.board--outline {
     margin: 10px 20px;
     border: 2px solid black;
     width: 195px; 
@@ -65,7 +65,7 @@ body {
     grid-row-gap: 0px;
 }
 
-.app--board-container > div {
+.board--outline > div {
     width: 24px;
     height: 24px;
     border: 2px solid black;
