@@ -173,15 +173,14 @@ export default function GameBoard(props) {
     }
 
     function revealTile(tileId) {
-        if (gameStatus === "win" || gameStatus === "lose") {
-            return
+        if (gameStatus !== "win" && gameStatus !== "lose") {
+            setGameStatus("onGoing")
+            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+                return tile.id === tileId
+                    ? {...tile, isRevealed: true}
+                    : tile
+            })))
         }
-        setGameStatus("onGoing")
-        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-            return tile.id === tileId
-                ? {...tile, isRevealed: true}
-                : tile
-        })))
     }
 
     /**
@@ -227,6 +226,9 @@ export default function GameBoard(props) {
              * Reveals the tile under 2 conditions:
              * 1. It is not revealed
              * 2. It is not flagged
+             * If one of the tiles revealed through chording has value 0,
+             * "call" revealZeroesAroundTile (since calling it does not seem
+             * to work, code from it is repeated here).
              * @param {number} row row of the tile
              * @param {number} col column of the tile
              */
@@ -280,13 +282,16 @@ export default function GameBoard(props) {
      * @param {number} tileCol column of the tile
      */
     function revealZeroesAroundTile(tileRow, tileCol) {
+        if (gameStatus === "win" || gameStatus === "lose") {
+            return
+        }
         const newBoard = []
-            for (let i = 0; i < height; i++) {
-                newBoard.push([])
-                for (let j = 0; j < width; j++) {
-                    newBoard[i].push(board[i][j])
-                }
+        for (let i = 0; i < height; i++) {
+            newBoard.push([])
+            for (let j = 0; j < width; j++) {
+                newBoard[i].push(board[i][j])
             }
+        }
         function DFS(row, col) {
             if (row < 0 || row === newBoard.length || col < 0 || 
                 col === newBoard[0].length || newBoard[row][col].isRevealed || newBoard[row][col].isFlagged) {
