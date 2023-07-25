@@ -27,44 +27,44 @@ export default function ChangeBoard(props) {
 
     function handleSubmit(event) {
         event.preventDefault()
-        if (boardProperties.height > 0 && boardProperties.height <= 30 &&
+        if (boardProperties.difficulty === "Beginner") {
+            boardProperties.height = 8
+            boardProperties.width = 8
+            boardProperties.mines = 10
+            props.changeBoardProperties(8, 8, 10)
+        } else if (boardProperties.difficulty === "Intermediate") {
+            boardProperties.height = 16
+            boardProperties.width = 16
+            boardProperties.mines = 40
+            props.changeBoardProperties(16, 16, 40)
+        } else if (boardProperties.difficulty === "Expert") {
+            boardProperties.height = 16
+            boardProperties.width = 30
+            boardProperties.mines = 99
+            props.changeBoardProperties(16, 30, 99)
+        } else if (boardProperties.height > 0 && boardProperties.height <= 30 &&
             boardProperties.width > 0 && boardProperties.width <= 30 &&
             boardProperties.mines > 0 &&
             boardProperties.mines < boardProperties.height * boardProperties.width) {
             props.changeBoardProperties(boardProperties.height, 
                 boardProperties.width, boardProperties.mines)
-            setCurrentBoard({
-                difficulty: boardProperties.difficulty,
-                height: boardProperties.height,
-                width: boardProperties.width,
-                mines: boardProperties.mines
-            })
-            setBoardProperties({
-                difficulty: "",
-                height: "",
-                width: "",
-                mines: ""
-            })
+        } else {
+            console.log("please select valid size")
+            return
         }
+        setCurrentBoard({
+            difficulty: boardProperties.difficulty,
+            height: boardProperties.height,
+            width: boardProperties.width,
+            mines: boardProperties.mines
+        })
+        setBoardProperties({
+            difficulty: "",
+            height: "",
+            width: "",
+            mines: ""
+        })
     }
-
-    React.useEffect(() => {
-        if (boardProperties.difficulty === "Beginner") {
-            boardProperties.height = 8
-            boardProperties.width = 8
-            boardProperties.mines = 10
-        }
-        if (boardProperties.difficulty === "Intermediate") {
-            boardProperties.height = 16
-            boardProperties.width = 16
-            boardProperties.mines = 40
-        }
-        if (boardProperties.difficulty === "Expert") {
-            boardProperties.height = 16
-            boardProperties.width = 30
-            boardProperties.mines = 99
-        }
-    }, [boardProperties])
 
     return (
         <nav>
