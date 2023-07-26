@@ -347,16 +347,25 @@ export default function GameBoard(props) {
      * 3. wrongly flagged tiles
      */
     function loseGame() {
-        if (gameStatus !== "lose" && gameStatus !== "win") {
-            setGameStatus("lose")
-            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-                return (!tile.isRevealed && tile.value !== "*") || 
-                (!tile.isFlagged && !tile.isRevealed && tile.value === "*") ||
-                (tile.isFlagged && tile.value !== "*")
-                    ? {...tile, isAutoRevealed: true}
-                    : tile
-            })))
-        }
+        setEndTime(Date.now())
+        setGameStatus("lose")
+        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
+            return (!tile.isRevealed && tile.value !== "*") || 
+            (!tile.isFlagged && !tile.isRevealed && tile.value === "*") ||
+            (tile.isFlagged && tile.value !== "*")
+                ? {...tile, isAutoRevealed: true}
+                : tile
+        })))
+    }
+
+    function winGame() {
+        setEndTime(Date.now())
+        setGameStatus("win")
+        setMinesLeft(0)
+        setBoard(board.map(row => 
+            row.map(tile => tile.value === "*" && !tile.isFlagged
+                ? { ...tile, isAutoRevealed: true }
+                : tile)))
     }
 
     function resetBoard() {
@@ -401,7 +410,6 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         if (gameStatus !== "lose" && gameStatus !== "win" &&
         board.some(row => row.some(tile => tile.value === "*" && tile.isRevealed))) {
-            setEndTime(Date.now())
             loseGame()
         }
     }, [board])
@@ -413,14 +421,7 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         if (gameStatus !== "win" && gameStatus !== "lose" && board.every(row => 
             row.every(tile => tile.value === "*" || tile.isRevealed))) {
-            setEndTime(Date.now())
-            setGameStatus("win")
-            setMinesLeft(0)
-            setBoard(board.map(row => 
-                row.map(tile => tile.value === "*" && !tile.isFlagged
-                    ? { ...tile, isAutoRevealed: true }
-                    : tile)))
-            
+            winGame()
         }
     }, [board])
 
