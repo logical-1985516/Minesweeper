@@ -16,14 +16,10 @@ export default function Board(props) {
                 ? props.chord(tile.row, tile.column)
                 : tile.value === 0
                 ? props.revealZeroesAroundTile(tile.row, tile.column)
-                : props.revealTile(tile.id)
+                : props.revealTile(tile.row, tile.column)
         }}
         isFlagged={tile.isFlagged}
-        flagTile={() => {
-            return tile.isRevealed
-                ? null
-                : props.flagTile(tile.id)
-        }}
+        flagTile={() => props.flagTile(tile.row, tile.column)}
     />))
 
     const styles = {

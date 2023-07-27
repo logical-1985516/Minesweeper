@@ -13,6 +13,15 @@ export default function GameBoard(props) {
     const [time, setTime] = React.useState(0)
     const [startTime, setStartTime] = React.useState()
     const [endTime, setEndTime] = React.useState()
+    const [usefulClicks, setUsefulClicks] = React.useState(0)
+    /**
+     * Increments based on following conditions while game is onGoing:
+     * Clicking a revealed tile
+     * Chording does not reveal any tiles
+     * Flagging a number tile or tiles that have been flagged before
+     * Unflagging a tile
+     */
+    const [wastedClicks, setWastedClicks] = React.useState(0)
     const [gameStatus, setGameStatus] = React.useState("")
     
     /**
@@ -118,6 +127,7 @@ export default function GameBoard(props) {
                     isRevealed: false,
                     isFlagged: false,
                     isAutoRevealed: false,
+                    isFlaggedBefore: false
                 }
             }
         }
@@ -172,14 +182,24 @@ export default function GameBoard(props) {
         return threeBV
     }
 
-    function revealTile(tileId) {
+    function revealTile(tileRow, tileColumn) {
         if (gameStatus !== "win" && gameStatus !== "lose") {
+            if (board[tileRow][tileColumn].isRevealed) {
+                setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
+                return
+            }
             setGameStatus("onGoing")
-            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-                return tile.id === tileId
-                    ? {...tile, isRevealed: true}
-                    : tile
-            })))
+            const newBoard = []
+            for (let i = 0; i < height; i++) {
+                newBoard.push([])
+                for (let j = 0; j < width; j++) {
+                    i === tileRow && j === tileColumn
+                        ? newBoard[i].push({...board[i][j], isRevealed: true})
+                        : newBoard[i].push(board[i][j])
+                }
+            }
+            setUsefulClicks(oldUsefulClicks => oldUsefulClicks + 1)
+            setBoard(newBoard)
         }
     }
 
@@ -192,6 +212,31 @@ export default function GameBoard(props) {
      */
     function chord(tileRow, tileColumn) {
         if (gameStatus === "win" || gameStatus === "lose") {
+            return
+        }
+        
+        function allRevealedOrFlagged(row, col) {
+            function isRevealedOrFlagged(row, col) {
+                if (row < 0 || row === height || col < 0 || col === width) {
+                    return true
+                }
+                if (board[row][col].isRevealed || board[row][col].isFlagged) {
+                    return true
+                }
+                return false
+            }
+            return isRevealedOrFlagged(row - 1, col - 1) &&
+                isRevealedOrFlagged(row, col - 1) &&
+                isRevealedOrFlagged(row + 1, col - 1) &&
+                isRevealedOrFlagged(row - 1, col) &&
+                isRevealedOrFlagged(row + 1, col) &&
+                isRevealedOrFlagged(row - 1, col + 1) &&
+                isRevealedOrFlagged(row, col + 1) &&
+                isRevealedOrFlagged(row + 1, col + 1)
+        }
+        if (board[tileRow][tileColumn].value !== findFlagsAroundTile(tileRow, tileColumn) ||
+            allRevealedOrFlagged(tileRow, tileColumn)) {
+            setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
             return
         }
         /**
@@ -261,6 +306,7 @@ export default function GameBoard(props) {
                     }
                 }
             }
+            setUsefulClicks(oldUsefulClicks => oldUsefulClicks + 1)
             updateTile(tileRow - 1, tileColumn - 1)
             updateTile(tileRow - 1, tileColumn)
             updateTile(tileRow - 1, tileColumn + 1)
@@ -281,8 +327,12 @@ export default function GameBoard(props) {
      * @param {number} tileRow row of the tile
      * @param {number} tileCol column of the tile
      */
-    function revealZeroesAroundTile(tileRow, tileCol) {
+    function revealZeroesAroundTile(tileRow, tileColumn) {
         if (gameStatus === "win" || gameStatus === "lose") {
+            return
+        }
+        if (board[tileRow][tileColumn].isRevealed) {
+            setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
             return
         }
         const newBoard = []
@@ -294,7 +344,8 @@ export default function GameBoard(props) {
         }
         function DFS(row, col) {
             if (row < 0 || row === newBoard.length || col < 0 || 
-                col === newBoard[0].length || newBoard[row][col].isRevealed || newBoard[row][col].isFlagged) {
+                col === newBoard[0].length || newBoard[row][col].isRevealed || 
+                newBoard[row][col].isFlagged) {
                 return
             }
             newBoard[row][col] = {...newBoard[row][col], isRevealed: true}
@@ -309,8 +360,9 @@ export default function GameBoard(props) {
                 DFS(row + 1, col + 1)
             }
         }
-        DFS(tileRow, tileCol)
+        DFS(tileRow, tileColumn)
         setGameStatus("onGoing")
+        setUsefulClicks(oldUsefulClicks => oldUsefulClicks + 1)
         setBoard(newBoard)
     }
 
@@ -321,22 +373,41 @@ export default function GameBoard(props) {
      * If it is revealed, do nothing
      * @param {string} tileId id of the tile (created by nanoid)
      */
-    function flagTile(tileId) {
+    function flagTile(tileRow, tileColumn) {
         if (gameStatus !== "win" && gameStatus !== "lose") {
+            if (board[tileRow][tileColumn].isRevealed) {
+                setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
+                return
+            }
             setGameStatus("onGoing")
-            setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-                if (tile.id !== tileId) {
-                    return tile
-                } else if (tile.id === tileId && !tile.isRevealed && !tile.isFlagged) {
-                    setMinesLeft(oldMinesLeft => oldMinesLeft - 1)
-                    return { ...tile, isFlagged: true }
-                } else if (tile.id === tileId && !tile.isRevealed && tile.isFlagged) {
-                    setMinesLeft(oldMinesLeft => oldMinesLeft + 1)
-                    return { ...tile, isFlagged: false }
-                } else {
-                    return tile
+            const newBoard = []
+            for (let i = 0; i < height; i++) {
+                newBoard.push([])
+                for (let j = 0; j < width; j++) {
+                    if (i !== tileRow || j !== tileColumn) {
+                        newBoard[i].push(board[i][j])
+                    } else {
+                        if (!board[i][j].isFlagged) {
+                            setMinesLeft(oldMinesLeft => oldMinesLeft - 1)
+                            if (board[i][j].value !== "*" || board[i][j].isFlaggedBefore) {
+                                setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
+                                newBoard[i].push({...board[i][j], isFlagged: true})
+                            } else {
+                                setUsefulClicks(oldUsefulClicks => oldUsefulClicks + 1)
+                                newBoard[i].push({
+                                    ...board[i][j], 
+                                    isFlagged: true, 
+                                    isFlaggedBefore: true})
+                            }
+                        } else {
+                            setMinesLeft(oldMinesLeft => oldMinesLeft + 1)
+                            setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
+                            newBoard[i].push({...board[i][j], isFlagged: false})
+                        }
+                    }
                 }
-            })))
+            }
+            setBoard(newBoard)
         }
     }
 
@@ -372,6 +443,8 @@ export default function GameBoard(props) {
         setGameStatus("")
         setMinesLeft(initialMines)
         setTime(0)
+        setUsefulClicks(0)
+        setWastedClicks(0)
         setBoard(generateTiles())
     }
 
@@ -450,10 +523,14 @@ export default function GameBoard(props) {
                 revealTile={revealTile}
                 flagTile={flagTile}
             />
+            {/* <div>{clicks}</div>
+            <div>{wastedClicks}</div> */}
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
                 time={(endTime - startTime) / 1000}
                 threeBV={find3BV()}
+                usefulClicks={usefulClicks}
+                wastedClicks={wastedClicks}
             />}
         </div>
     )
