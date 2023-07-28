@@ -9,10 +9,13 @@ export default function GameBoard(props) {
     const width = props.width
     const initialMines = props.mines
     const [minesLeft, setMinesLeft] = React.useState(props.mines)
-    const [board, setBoard] = React.useState(generateTiles())
+    const [board, setBoard] = React.useState(generateTiles)
     const [time, setTime] = React.useState(0)
     const [startTime, setStartTime] = React.useState()
     const [endTime, setEndTime] = React.useState()
+    const [threeBV, set3BV] = React.useState(find3BV)
+    //console.log(threeBV)
+    const [current3BV, setCurrent3BV] = React.useState(0)
     const [usefulClicks, setUsefulClicks] = React.useState(0)
     /**
      * Increments based on following conditions while game is onGoing:
@@ -116,6 +119,7 @@ export default function GameBoard(props) {
      * @returns board with the properties of the tiles
      */
     function generateTiles() {
+        console.log("passed")
         const valuesBoard = putNumbers()
         for (let i = 0; i < valuesBoard.length; i++) {
             for (let j = 0; j < valuesBoard[0].length; j++) {
@@ -136,9 +140,10 @@ export default function GameBoard(props) {
 
     /**
      * 
-     * @returns minimum number of clicks to win the game
+     * @returns minimum number of clicks to win the game without flagging
      */
     function find3BV() {
+        console.log(board)
         const visited = []
         let threeBV = 0
         for (let i = 0; i < height; i++) {
@@ -234,6 +239,7 @@ export default function GameBoard(props) {
                 isRevealedOrFlagged(row, col + 1) &&
                 isRevealedOrFlagged(row + 1, col + 1)
         }
+
         if (board[tileRow][tileColumn].value !== findFlagsAroundTile(tileRow, tileColumn) ||
             allRevealedOrFlagged(tileRow, tileColumn)) {
             setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
@@ -411,6 +417,55 @@ export default function GameBoard(props) {
         }
     }
 
+    function findCurrent3BV() {
+        const visited = []
+        let threeBV = 0
+        let visitedRevealed = false
+        for (let i = 0; i < height; i++) {
+            visited.push([])
+            for (let j = 0; j < width; j++) {
+                visited[i].push(false)
+            }
+        }
+        function DFS(row, col) {
+            if (row < 0 || row === height || col < 0 || col === width ||
+                visited[row][col]) {
+                return
+            }
+            visited[row][col] = true
+            if (board[row][col].isRevealed) {
+                visitedRevealed = true
+            }
+            if (board[row][col].value === 0) {
+                DFS(row - 1, col - 1)
+                DFS(row, col - 1)
+                DFS(row + 1, col - 1)
+                DFS(row - 1, col)
+                DFS(row + 1, col)
+                DFS(row - 1, col + 1)
+                DFS(row, col + 1)
+                DFS(row + 1, col + 1)
+            }
+        }
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                if (board[i][j].value === 0 && !visited[i][j]) {
+                    visitedRevealed = false
+                    DFS(i, j)
+                    visitedRevealed && threeBV++
+                }
+            }
+        }
+        for (let i = 0; i < height; i++) {
+            for (let j = 0; j < width; j++) {
+                if (!visited[i][j] && board[i][j].value !== "*" && board[i][j].isRevealed) {
+                    threeBV++
+                }
+            }
+        }
+        return threeBV
+    }
+
     /**
      * Autoreveals: 
      * 1. unrevealed numbers
@@ -441,12 +496,21 @@ export default function GameBoard(props) {
 
     function resetBoard() {
         setGameStatus("")
+        setBoard(generateTiles())
         setMinesLeft(initialMines)
         setTime(0)
         setUsefulClicks(0)
         setWastedClicks(0)
-        setBoard(generateTiles())
     }
+    
+    /**
+     * Follow-up from resetBoard: set 3BV to new value AFTER board is updated
+     */
+    React.useEffect(() => {
+        if (gameStatus === "") {
+            set3BV(find3BV())
+        }
+    }, [board])
 
     /**
      * Removes the context menu upon right click
@@ -525,10 +589,11 @@ export default function GameBoard(props) {
             />
             {/* <div>{clicks}</div>
             <div>{wastedClicks}</div> */}
+            {/* <div>{findCurrent3BV()}</div> */}
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
                 time={(endTime - startTime) / 1000}
-                threeBV={find3BV()}
+                threeBV={threeBV}
                 usefulClicks={usefulClicks}
                 wastedClicks={wastedClicks}
             />}
