@@ -1,8 +1,8 @@
 import React from "react"
 
 export default function GameResult(props) {
-    // const efficiency = 100 * (props.usefulClicks + props.wastedClicks) / props.threeBV
-    // const threeBVPerSecond = Math.round(props.threeBV / props.time)
+    const efficiency = 100 * props.current3BV / (props.usefulClicks + props.wastedClicks)
+    const threeBVPerSecond = props.current3BV / props.time
     return (
         <div className="gameResult--container">
             <div>
@@ -11,7 +11,12 @@ export default function GameResult(props) {
             <div>
                 3BV: {props.threeBV}
             </div>
-            {/* <div>3BV/s: {props.threeBV / props.time}</div> */}
+            <div>
+                Current 3BV: {props.current3BV}
+            </div>
+            <div>
+                3BV/s: {Math.round(100 * threeBVPerSecond) / 100}
+            </div>
             <div>
                 Useful Clicks: {props.usefulClicks}
             </div>
@@ -19,7 +24,7 @@ export default function GameResult(props) {
                 Wasted Clicks: {props.wastedClicks}
             </div>
             <div>
-                {/* Efficiency: {`${Math.round(efficiency)}%`} */}
+                Efficiency: {`${Math.round(efficiency)}%`}
             </div>
         </div>
 

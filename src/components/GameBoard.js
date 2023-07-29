@@ -14,7 +14,6 @@ export default function GameBoard(props) {
     const [startTime, setStartTime] = React.useState()
     const [endTime, setEndTime] = React.useState()
     const [threeBV, set3BV] = React.useState(find3BV)
-    //console.log(threeBV)
     const [current3BV, setCurrent3BV] = React.useState(0)
     const [usefulClicks, setUsefulClicks] = React.useState(0)
     /**
@@ -475,6 +474,7 @@ export default function GameBoard(props) {
     function loseGame() {
         setEndTime(Date.now())
         setGameStatus("lose")
+        setCurrent3BV(findCurrent3BV())
         setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
             return (!tile.isRevealed && tile.value !== "*") || 
             (!tile.isFlagged && !tile.isRevealed && tile.value === "*") ||
@@ -488,6 +488,7 @@ export default function GameBoard(props) {
         setEndTime(Date.now())
         setGameStatus("win")
         setMinesLeft(0)
+        setCurrent3BV(threeBV)
         setBoard(board.map(row => 
             row.map(tile => tile.value === "*" && !tile.isFlagged
                 ? { ...tile, isAutoRevealed: true }
@@ -589,11 +590,12 @@ export default function GameBoard(props) {
             />
             {/* <div>{clicks}</div>
             <div>{wastedClicks}</div> */}
-            {/* <div>{findCurrent3BV()}</div> */}
+            {/* {<div>{findCurrent3BV()}</div>} */}
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
                 time={(endTime - startTime) / 1000}
                 threeBV={threeBV}
+                current3BV={current3BV}
                 usefulClicks={usefulClicks}
                 wastedClicks={wastedClicks}
             />}
