@@ -1,5 +1,6 @@
 import React from "react"
 import ChangeBoard from "./ChangeBoard"
+import Settings from "./Settings"
 
 export default function Navbar(props) {
     const [itemOpen, setItemOpen] = React.useState("")
@@ -12,6 +13,10 @@ export default function Navbar(props) {
 
     function changeBoardProperties(height, width, mines) {
        props.changeBoardProperties(height, width, mines)
+    }
+
+    function changeShowMetricsData(formData) {
+        props.changeShowMetricsData(formData)
     }
 
     function toggleShowSettings() {
@@ -36,12 +41,9 @@ export default function Navbar(props) {
                 changeBoardProperties={changeBoardProperties}
             />}
             {itemOpen === "settings" && 
-            <form>
-                <input 
-                    type="checkbox"
-                />
-                <label>Sound</label>
-            </form>
+            <Settings 
+                changeShowMetricsData={changeShowMetricsData}
+            />
             }
             </div>
         </nav>

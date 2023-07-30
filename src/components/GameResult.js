@@ -1,6 +1,7 @@
 import React from "react"
 
 export default function GameResult(props) {
+    const showMetricsData = props.showMetricsData
     const gameProgress = props.current3BV / props.threeBV
     const estimatedTime = props.time / gameProgress
     const threeBVPerSecond = props.current3BV / props.time
@@ -55,33 +56,42 @@ export default function GameResult(props) {
                     <div>
                         3BV/s: {Math.round(1000 * threeBVPerSecond) / 1000}
                     </div>
+                    {showMetricsData.showRQP && 
                     <div>
                         RQP: {Math.round(1000 * RQP) / 1000}
-                    </div>
+                    </div>}
+                    {showMetricsData.showIOS && 
                     <div>
                         IOS: {Math.round(1000 * IOS) / 1000}
-                    </div>
+                    </div>}
                 </div>
+                {(showMetricsData.showClicksPerSecond || 
+                showMetricsData.showUsefulClicksPerSecond) && 
                 <div className="gameResult--clicks-metric">
                     <div className="gameResult--title">Clicking speed</div>
+                    {showMetricsData.showClicksPerSecond && 
                     <div>
                         Clicks/s: {Math.round(1000 * clicksPerSecond) / 1000}
-                    </div>
+                    </div>}
+                    {showMetricsData.showUsefulClicksPerSecond 
+                        && 
                     <div>
                         Useful Clicks/s: {Math.round(1000 * usefulClicksPerSecond) / 1000}
-                    </div>
-                </div>
+                    </div>}
+                </div>}
                 <div className="gameResult--efficiency-metric">
                     <div className="gameResult--title">Efficiency</div>
                     <div>
                         Efficiency: {`${Math.round(100 * efficiency)}%`}
                     </div>
+                    {showMetricsData.showThroughput && 
                     <div>
                         Throughput: {`${Math.round(100 * throughput)}%`}
-                    </div>
+                    </div>}
+                    {showMetricsData.showCorrectness && 
                     <div>
                         Correctness: {`${Math.round(100 * correctness)}%`}
-                    </div>
+                    </div>}
                 </div>
             </div>
         </div>

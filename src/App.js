@@ -11,6 +11,15 @@ export default function App() {
         JSON.parse(localStorage.getItem("currentBoard")).width || 8)
     const [initialMines, setInitialMines] = React.useState(
         JSON.parse(localStorage.getItem("currentBoard")).mines || 8)
+    const [showMetricsData, setShowMetricsData] = React.useState(
+        JSON.parse(localStorage.getItem("advancedMetrics")) || {
+        showRQP: false,
+        showIOS: false,
+        showClicksPerSecond: false,
+        showUsefulClicksPerSecond: false,
+        showThroughput: false,
+        showCorrectness: false
+    })
 
     function changeBoardProperties(height, width, mines) {
         setHeight(height)
@@ -18,16 +27,21 @@ export default function App() {
         setInitialMines(mines)
     }
 
+    function changeShowMetricsData(formData) {
+        setShowMetricsData(formData)
+    }
+
     return (
         <div>
             <Navbar 
                 changeBoardProperties={changeBoardProperties}
+                changeShowMetricsData={changeShowMetricsData}
             />
             <GameBoard 
                 height={height}
                 width={width}
                 mines={initialMines}
-                updateBoard
+                showMetricsData={showMetricsData}
             />
             <Footer />
         </div>

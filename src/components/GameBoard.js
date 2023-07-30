@@ -16,6 +16,7 @@ export default function GameBoard(props) {
     const [threeBV, set3BV] = React.useState(find3BV)
     const [current3BV, setCurrent3BV] = React.useState(0)
     const [usefulClicks, setUsefulClicks] = React.useState(0)
+    const showMetricsData = props.showMetricsData
     /**
      * Increments based on following conditions while game is onGoing:
      * Clicking a revealed tile
@@ -598,6 +599,7 @@ export default function GameBoard(props) {
                 current3BV={current3BV}
                 usefulClicks={usefulClicks}
                 wastedClicks={wastedClicks}
+                showMetricsData={showMetricsData}
             />}
         </div>
     )
