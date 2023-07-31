@@ -24,8 +24,14 @@ export default function Navbar(props) {
             ? setItemOpen("")
             : setItemOpen("settings")
     }
+
+    const styles = {
+        borderBottom: itemOpen
+            ? "2px solid black"
+            : "none"
+    }
     return (
-        <nav className="navbar--container">
+        <nav className="navbar--container" style={styles}>
             <div className="navbar--title">
                 <span>Minesweeper</span>
                 <button onClick={toggleShowChangeBoard} className="navbar--button">
@@ -35,6 +41,7 @@ export default function Navbar(props) {
                     Settings
                 </button>
             </div>
+            {itemOpen &&
             <div className="navbar--item">
             {itemOpen === "changeBoard" && 
             <ChangeBoard 
@@ -45,7 +52,7 @@ export default function Navbar(props) {
                 changeShowMetricsData={changeShowMetricsData}
             />
             }
-            </div>
+            </div>}
         </nav>
     )
 }

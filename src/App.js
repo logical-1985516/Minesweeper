@@ -32,7 +32,7 @@ export default function App() {
     }
 
     return (
-        <div>
+        <div className="app--container">
             <Navbar 
                 changeBoardProperties={changeBoardProperties}
                 changeShowMetricsData={changeShowMetricsData}

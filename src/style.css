@@ -8,9 +8,9 @@ body {
     margin: 0;
 }
 
-.navbar--container {
+/* .navbar--container {
     border-bottom: 2px solid black;
-}
+} */
 
 .navbar--title {
     display: flex;
@@ -98,6 +98,10 @@ body {
     font-size: 16px;
 }
 
+.gameBoard--container {
+    min-height: 79vh;
+}
+
 .header--container {
     display: flex;
     justify-content: space-between;
@@ -138,6 +142,7 @@ body {
 .board--container {
     display: flex;
     justify-content: center;
+    margin: 10px;
 }
 
 .board--outline {
@@ -216,4 +221,18 @@ body {
 
 .gameResult--efficiency-metric {
     background: -webkit-linear-gradient(left, lightgreen 50%, #9dd0e1 50%)
+}
+
+.footer--container {
+    background-color: turquoise;
+    padding: 15px 10px;
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    color: white;
+}
+
+.footer--container > a {
+    color: white;
+    text-decoration: none;
 }

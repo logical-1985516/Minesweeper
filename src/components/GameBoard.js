@@ -573,7 +573,7 @@ export default function GameBoard(props) {
     }, [height, width, initialMines])
     
     return (
-        <div>
+        <div className="gameBoard--container">
             <Header 
                 minesLeft={minesLeft}
                 gameStatus={gameStatus}
