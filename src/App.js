@@ -5,12 +5,18 @@ import Footer from "./components/Footer"
 import "./style.css"
 
 export default function App() {
-    const [height, setHeight] = React.useState(
-        JSON.parse(localStorage.getItem("currentBoard")).height || 8)
-    const [width, setWidth] = React.useState(
-        JSON.parse(localStorage.getItem("currentBoard")).width || 8)
-    const [initialMines, setInitialMines] = React.useState(
-        JSON.parse(localStorage.getItem("currentBoard")).mines || 8)
+    // const [height, setHeight] = React.useState(
+    //     JSON.parse(localStorage.getItem("currentBoard")).height || 8)
+    // const [width, setWidth] = React.useState(
+    //     JSON.parse(localStorage.getItem("currentBoard")).width || 8)
+    // const [initialMines, setInitialMines] = React.useState(
+    //     JSON.parse(localStorage.getItem("currentBoard")).mines || 8)
+    const [boardProperties, setBoardProperties] = React.useState({
+            difficulty: "Beginner",
+            height: 8,
+            width: 8,
+            initialMines: 10
+    })
     const [showMetricsData, setShowMetricsData] = React.useState(
         JSON.parse(localStorage.getItem("advancedMetrics")) || {
         showRQP: false,
@@ -21,10 +27,9 @@ export default function App() {
         showCorrectness: false
     })
 
-    function changeBoardProperties(height, width, mines) {
-        setHeight(height)
-        setWidth(width)
-        setInitialMines(mines)
+    console.log(JSON.parse(localStorage.getItem("advancedMetrics")))
+    function changeBoardProperties(boardProperties) {
+        setBoardProperties(boardProperties)
     }
 
     function changeShowMetricsData(formData) {
@@ -39,9 +44,7 @@ export default function App() {
                 showMetricsData={showMetricsData}
             />
             <GameBoard 
-                height={height}
-                width={width}
-                mines={initialMines}
+                boardProperties={boardProperties}
                 showMetricsData={showMetricsData}
             />
             <Footer />

@@ -12,8 +12,8 @@ export default function Navbar(props) {
             : setItemOpen(name)
     }
 
-    function changeBoardProperties(height, width, mines) {
-       props.changeBoardProperties(height, width, mines)
+    function changeBoardProperties(boardProperties) {
+       props.changeBoardProperties(boardProperties)
     }
 
     function changeShowMetricsData(formData) {

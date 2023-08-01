@@ -5,10 +5,11 @@ import GameResult from "./GameResult"
 import {nanoid} from "nanoid"
 
 export default function GameBoard(props) {
-    const height = props.height
-    const width = props.width
-    const initialMines = props.mines
-    const [minesLeft, setMinesLeft] = React.useState(props.mines)
+    const difficulty = props.boardProperties.difficulty
+    const height = props.boardProperties.height
+    const width = props.boardProperties.width
+    const initialMines = props.boardProperties.initialMines
+    const [minesLeft, setMinesLeft] = React.useState(props.initialMines)
     const [board, setBoard] = React.useState(generateTiles)
     const [time, setTime] = React.useState(0)
     const [startTime, setStartTime] = React.useState()
@@ -142,6 +143,10 @@ export default function GameBoard(props) {
      * @returns minimum number of clicks to win the game without flagging
      */
     function find3BV() {
+        //console.log(board)
+        //console.log(height)
+        //console.log(width)
+        //console.log(initialMines)
         const visited = []
         let threeBV = 0
         for (let i = 0; i < height; i++) {
@@ -151,11 +156,14 @@ export default function GameBoard(props) {
             }
         }
         function DFS(row, col) {
+            //console.log(row)
+            //console.log(col)
             if (row < 0 || row === height || col < 0 || col === width ||
                 visited[row][col]) {
                 return
             }
             visited[row][col] = true
+            //console.log(board[row][col])
             if (board[row][col].value === 0) {
                 DFS(row - 1, col - 1)
                 DFS(row, col - 1)
@@ -568,7 +576,7 @@ export default function GameBoard(props) {
      */
     React.useEffect(() => {
         resetBoard()
-    }, [height, width, initialMines])
+    }, [difficulty, height, width, initialMines])
     
     return (
         <div className="gameBoard--container">
@@ -598,6 +606,7 @@ export default function GameBoard(props) {
                 usefulClicks={usefulClicks}
                 wastedClicks={wastedClicks}
                 showMetricsData={showMetricsData}
+                boardProperties={props.boardProperties}
             />}
         </div>
     )

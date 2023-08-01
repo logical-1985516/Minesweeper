@@ -6,9 +6,9 @@ export default function ChangeBoard(props) {
         difficulty: "Beginner",
         height: 8,
         width: 8,
-        mines: 10
+        initialMines: 10
     })
-
+    console.log(JSON.parse(localStorage.getItem("currentBoard")))
     /**
      * The properties that we are going to change to
      */
@@ -16,7 +16,7 @@ export default function ChangeBoard(props) {
         difficulty: "",
         height: "",
         width: "",
-        mines: ""
+        initialMines: ""
     })
 
     function handleChange(event) {
@@ -31,40 +31,36 @@ export default function ChangeBoard(props) {
         if (boardProperties.difficulty === "Beginner") {
             boardProperties.height = 8
             boardProperties.width = 8
-            boardProperties.mines = 10
-            props.changeBoardProperties(8, 8, 10)
+            boardProperties.initialMines = 10
         } else if (boardProperties.difficulty === "Intermediate") {
             boardProperties.height = 16
             boardProperties.width = 16
-            boardProperties.mines = 40
-            props.changeBoardProperties(16, 16, 40)
+            boardProperties.initialMines = 40
         } else if (boardProperties.difficulty === "Expert") {
             boardProperties.height = 16
             boardProperties.width = 30
-            boardProperties.mines = 99
-            props.changeBoardProperties(16, 30, 99)
+            boardProperties.initialMines = 99
         } else if (boardProperties.difficulty === "Custom" &&
-            boardProperties.height > 0 && boardProperties.height <= 30 &&
-            boardProperties.width > 0 && boardProperties.width <= 30 &&
-            boardProperties.mines > 0 &&
-            boardProperties.mines < boardProperties.height * boardProperties.width) {
-            props.changeBoardProperties(boardProperties.height, 
-                boardProperties.width, boardProperties.mines)
+            boardProperties.initialMines < boardProperties.height * boardProperties.width) {
+            boardProperties.height = Number(boardProperties.height)
+            boardProperties.width = Number(boardProperties.width)
+            boardProperties.initialMines = Number(boardProperties.initialMines)
         } else {
             console.log("please select valid size")
             return
         }
+        props.changeBoardProperties(boardProperties)
         setCurrentBoard({
             difficulty: boardProperties.difficulty,
             height: boardProperties.height,
             width: boardProperties.width,
-            mines: boardProperties.mines
+            initialMines: boardProperties.initialMines
         })
         setBoardProperties({
             difficulty: "",
             height: "",
             width: "",
-            mines: ""
+            initialMines: ""
         })
     }
 
@@ -79,7 +75,7 @@ export default function ChangeBoard(props) {
                 <div>Difficulty: {currentBoard.difficulty}</div>
                 <div>Height: {currentBoard.height}</div>
                 <div>Width: {currentBoard.width}</div>
-                <div>Mines: {currentBoard.mines}</div>
+                <div>Mines: {currentBoard.initialMines}</div>
             </div>
             <form onSubmit={handleSubmit} className="changeBoard--form">
                 <input
@@ -120,7 +116,7 @@ export default function ChangeBoard(props) {
                     checked={boardProperties.difficulty === "Custom"}
                     onChange={handleChange}
                 />
-                <label htmlFor="Custom" className="changeBoard--custom">Custom </label>
+                <label htmlFor="Custom" className="changeBoard--custom">Custom</label>
                 <label htmlFor="height">Height</label>
                 <input 
                     type="number"
@@ -128,6 +124,9 @@ export default function ChangeBoard(props) {
                     name="height"
                     value={boardProperties.height}
                     onChange={handleChange}
+                    min={1}
+                    max={30}
+                    step={1}
                     className="changeBoard--input"
                 />
                 <label htmlFor="width">Width</label>
@@ -137,15 +136,21 @@ export default function ChangeBoard(props) {
                     name="width"
                     value={boardProperties.width}
                     onChange={handleChange}
+                    min={1}
+                    max={30}
+                    step={1}
                     className="changeBoard--input"
                 />
-                <label htmlFor="mines">Mines</label>
+                <label htmlFor="initialMines">Mines</label>
                 <input 
                     type="number"
-                    id="mines"
-                    name="mines"
-                    value={boardProperties.mines}
+                    id="initialMines"
+                    name="initialMines"
+                    value={boardProperties.initialMines}
                     onChange={handleChange}
+                    min={1}
+                    max={boardProperties.height * boardProperties.width - 1}
+                    step={1}
                     className="changeBoard--input"
                 />
                 <br />
