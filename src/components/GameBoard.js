@@ -119,7 +119,6 @@ export default function GameBoard(props) {
      * @returns board with the properties of the tiles
      */
     function generateTiles() {
-        console.log("passed")
         const valuesBoard = putNumbers()
         for (let i = 0; i < valuesBoard.length; i++) {
             for (let j = 0; j < valuesBoard[0].length; j++) {
@@ -143,7 +142,6 @@ export default function GameBoard(props) {
      * @returns minimum number of clicks to win the game without flagging
      */
     function find3BV() {
-        console.log(board)
         const visited = []
         let threeBV = 0
         for (let i = 0; i < height; i++) {

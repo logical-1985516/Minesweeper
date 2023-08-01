@@ -98,6 +98,19 @@ body {
     font-size: 16px;
 }
 
+.allGamesPlayed--container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.allGamesPlayed--stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
 .gameBoard--container {
     min-height: 79vh;
 }

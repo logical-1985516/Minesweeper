@@ -1,4 +1,6 @@
 import React from "react"
+import { resultsCollection } from "../firebase"
+import { addDoc } from "firebase/firestore"
 
 export default function GameResult(props) {
     const showMetricsData = props.showMetricsData
@@ -13,6 +15,21 @@ export default function GameResult(props) {
     const efficiency = props.current3BV / totalClicks
     const throughput = props.current3BV / props.usefulClicks
     const correctness = props.usefulClicks / totalClicks
+
+    async function addGameResult() {
+        addDoc(resultsCollection, {
+            time: props.time,
+            threeBV: props.threeBV,
+            current3BV: props.current3BV,
+            usefulClicks: props.usefulClicks,
+            wastedClicks: props.wastedClicks,
+        })
+    }
+
+    React.useEffect(() => {
+        addGameResult()
+    }, [])
+
     return (
         <div className="gameResult--container">
             <div className="gameResult--stats">

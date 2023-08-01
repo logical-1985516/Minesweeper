@@ -36,6 +36,7 @@ export default function App() {
             <Navbar 
                 changeBoardProperties={changeBoardProperties}
                 changeShowMetricsData={changeShowMetricsData}
+                showMetricsData={showMetricsData}
             />
             <GameBoard 
                 height={height}

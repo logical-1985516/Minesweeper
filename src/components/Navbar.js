@@ -1,14 +1,15 @@
 import React from "react"
 import ChangeBoard from "./ChangeBoard"
 import Settings from "./Settings"
+import AllGamesPlayed from "./AllGamesPlayed"
 
 export default function Navbar(props) {
     const [itemOpen, setItemOpen] = React.useState("")
 
-    function toggleShowChangeBoard() {
-        itemOpen === "changeBoard"
+    function toggleShow(name) {
+        itemOpen === name
             ? setItemOpen("")
-            : setItemOpen("changeBoard")
+            : setItemOpen(name)
     }
 
     function changeBoardProperties(height, width, mines) {
@@ -17,12 +18,6 @@ export default function Navbar(props) {
 
     function changeShowMetricsData(formData) {
         props.changeShowMetricsData(formData)
-    }
-
-    function toggleShowSettings() {
-        itemOpen === "settings"
-            ? setItemOpen("")
-            : setItemOpen("settings")
     }
 
     const styles = {
@@ -34,11 +29,14 @@ export default function Navbar(props) {
         <nav className="navbar--container" style={styles}>
             <div className="navbar--title">
                 <span>Minesweeper</span>
-                <button onClick={toggleShowChangeBoard} className="navbar--button">
+                <button onClick={() => toggleShow("changeBoard")} className="navbar--button">
                     Change Board
                 </button>
-                <button onClick={toggleShowSettings} className="navbar--button">
+                <button onClick={() => toggleShow("settings")} className="navbar--button">
                     Settings
+                </button>
+                <button onClick={() => toggleShow("allGamesPlayed")} className="navbar--button">
+                    All Games
                 </button>
             </div>
             {itemOpen &&
@@ -52,6 +50,10 @@ export default function Navbar(props) {
                 changeShowMetricsData={changeShowMetricsData}
             />
             }
+            {itemOpen === "allGamesPlayed" &&
+            <AllGamesPlayed 
+                showMetricsData={props.showMetricsData}
+            />}
             </div>}
         </nav>
     )
