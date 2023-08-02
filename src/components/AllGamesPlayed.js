@@ -17,17 +17,6 @@ export default function AllGamesPlayed(props) {
         return unsubscribe
     }, [])
 
-    console.log(gamesResults)
-
-    // const gamesResultsElements = gamesResults && gamesResults.map(gameResults => {
-    //     return (
-    //         <div className="allGamesPlayed--results">
-    //             <span>{gameResults.time}</span>
-    //             <span>{gameResults.threeBV}</span>
-    //         </div>
-    //         )
-    // })
-
     function getResults(stat) {
         return gamesResults && (stat === "time"
             ? gamesResults.map(gameResults => <div>{gameResults[stat]}s</div>)
@@ -186,17 +175,6 @@ export default function AllGamesPlayed(props) {
                 <div>Correctness</div>
                 {correctnessElements}
             </span>}
-            {/* <div>
-                <span>Time</span>
-                <span>Estimated Time</span>
-                <span>3BV</span>
-                <span>Current 3BV</span>
-                <span>3BV/s</span>
-                <span>Efficiency</span>
-                <span>Difficulty</span>
-                <span>3BV</span>
-            </div>
-            {gamesResults && <div>{gamesResultsElements}</div>} */}
         </div>
     )
 }

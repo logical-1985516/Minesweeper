@@ -5,12 +5,6 @@ import Footer from "./components/Footer"
 import "./style.css"
 
 export default function App() {
-    // const [height, setHeight] = React.useState(
-    //     JSON.parse(localStorage.getItem("currentBoard")).height || 8)
-    // const [width, setWidth] = React.useState(
-    //     JSON.parse(localStorage.getItem("currentBoard")).width || 8)
-    // const [initialMines, setInitialMines] = React.useState(
-    //     JSON.parse(localStorage.getItem("currentBoard")).mines || 8)
     const [boardProperties, setBoardProperties] = React.useState(
         JSON.parse(localStorage.getItem("currentBoard")) || {
             difficulty: "Beginner",
@@ -18,6 +12,7 @@ export default function App() {
             width: 8,
             initialMines: 10
     })
+    
     const [showMetricsData, setShowMetricsData] = React.useState(
         JSON.parse(localStorage.getItem("advancedMetrics")) || {
         showRQP: false,

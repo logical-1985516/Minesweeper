@@ -143,10 +143,6 @@ export default function GameBoard(props) {
      * @returns minimum number of clicks to win the game without flagging
      */
     function find3BV() {
-        //console.log(board)
-        //console.log(height)
-        //console.log(width)
-        //console.log(initialMines)
         const visited = []
         let threeBV = 0
         for (let i = 0; i < height; i++) {
@@ -156,14 +152,11 @@ export default function GameBoard(props) {
             }
         }
         function DFS(row, col) {
-            //console.log(row)
-            //console.log(col)
             if (row < 0 || row === height || col < 0 || col === width ||
                 visited[row][col]) {
                 return
             }
             visited[row][col] = true
-            //console.log(board[row][col])
             if (board[row][col].value === 0) {
                 DFS(row - 1, col - 1)
                 DFS(row, col - 1)
@@ -595,9 +588,6 @@ export default function GameBoard(props) {
                 revealTile={revealTile}
                 flagTile={flagTile}
             />
-            {/* <div>{clicks}</div>
-            <div>{wastedClicks}</div> */}
-            {/* {<div>{findCurrent3BV()}</div>} */}
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
                 time={(endTime - startTime) / 1000 === 0
