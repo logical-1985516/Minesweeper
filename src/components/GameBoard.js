@@ -479,7 +479,7 @@ export default function GameBoard(props) {
      * 3. wrongly flagged tiles
      */
     function loseGame() {
-        setEndTime(Date.now())
+            setEndTime(Date.now())
         setGameStatus("lose")
         setCurrent3BV(findCurrent3BV())
         setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
@@ -600,7 +600,9 @@ export default function GameBoard(props) {
             {/* {<div>{findCurrent3BV()}</div>} */}
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
-                time={(endTime - startTime) / 1000}
+                time={(endTime - startTime) / 1000 === 0
+                    ? 0.001
+                    : (endTime - startTime) / 1000}
                 threeBV={threeBV}
                 current3BV={current3BV}
                 usefulClicks={usefulClicks}
