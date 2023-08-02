@@ -40,8 +40,7 @@ export default function ChangeBoard(props) {
             boardProperties.height = 16
             boardProperties.width = 30
             boardProperties.initialMines = 99
-        } else if (boardProperties.difficulty === "Custom" &&
-            boardProperties.initialMines < boardProperties.height * boardProperties.width) {
+        } else if (boardProperties.difficulty === "Custom") {
             boardProperties.height = Number(boardProperties.height)
             boardProperties.width = Number(boardProperties.width)
             boardProperties.initialMines = Number(boardProperties.initialMines)
@@ -148,7 +147,7 @@ export default function ChangeBoard(props) {
                     name="initialMines"
                     value={boardProperties.initialMines}
                     onChange={handleChange}
-                    min={1}
+                    min={0}
                     max={boardProperties.height * boardProperties.width - 1}
                     step={1}
                     className="changeBoard--input"
