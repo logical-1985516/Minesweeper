@@ -11,7 +11,8 @@ export default function App() {
     //     JSON.parse(localStorage.getItem("currentBoard")).width || 8)
     // const [initialMines, setInitialMines] = React.useState(
     //     JSON.parse(localStorage.getItem("currentBoard")).mines || 8)
-    const [boardProperties, setBoardProperties] = React.useState({
+    const [boardProperties, setBoardProperties] = React.useState(
+        JSON.parse(localStorage.getItem("currentBoard")) || {
             difficulty: "Beginner",
             height: 8,
             width: 8,
@@ -27,7 +28,6 @@ export default function App() {
         showCorrectness: false
     })
 
-    console.log(JSON.parse(localStorage.getItem("advancedMetrics")))
     function changeBoardProperties(boardProperties) {
         setBoardProperties(boardProperties)
     }
