@@ -26,6 +26,8 @@ export default function GameBoard(props) {
      * Unflagging a tile
      */
     const [wastedClicks, setWastedClicks] = React.useState(0)
+    const [finished1stClick, setFinished1stClick] = React.useState(false)
+    const [firstRevealedPos, setFirstRevealedPos] = React.useState(null)
     const [gameStatus, setGameStatus] = React.useState("")
     
     /**
@@ -53,11 +55,13 @@ export default function GameBoard(props) {
      * 4. Repeat until there is a certain # of mines on the 2d array.
      * @returns board with just the mines that are randomly scattered
      */
-    function putMines() {
+    function putMines(row, column) {
         const minesBoard = generateEmptyBoard()
         let positions = []
         for (let i = 0; i < height * width; i++) {
-            positions.push(i)
+            if (i !== row * width + column) {
+                positions.push(i)
+            }
         }
         for (let i = 0; i < initialMines; i++) {
             const posIndex = Math.floor(positions.length * Math.random())
@@ -75,8 +79,8 @@ export default function GameBoard(props) {
      * 
      * @returns board of values
      */
-    function putNumbers() {
-        const newBoard = putMines()
+    function putNumbers(row, column) {
+        const newBoard = putMines(row, column)
         /**
          * Checks if each of the surrounding tiles is a mine, then find the
          * sum of the result.
@@ -119,8 +123,8 @@ export default function GameBoard(props) {
      * 
      * @returns board with the properties of the tiles
      */
-    function generateTiles() {
-        const valuesBoard = putNumbers()
+    function generateTiles(row, column) {
+        const valuesBoard = putNumbers(row, column)
         for (let i = 0; i < valuesBoard.length; i++) {
             for (let j = 0; j < valuesBoard[0].length; j++) {
                 valuesBoard[i][j] = {
@@ -197,9 +201,16 @@ export default function GameBoard(props) {
             for (let i = 0; i < height; i++) {
                 newBoard.push([])
                 for (let j = 0; j < width; j++) {
-                    i === tileRow && j === tileColumn
-                        ? newBoard[i].push({...board[i][j], isRevealed: true})
-                        : newBoard[i].push(board[i][j])
+                    if (i !== tileRow || j !== tileColumn) {
+                        newBoard[i].push(board[i][j])
+                    } else {
+                        if (!finished1stClick && board[i][j].value === "*") {
+                            newBoard[i].push({...board[i][j], isRevealed: false})
+                            setFirstRevealedPos({row: tileRow, column: tileColumn})
+                        } else {
+                            newBoard[i].push({...board[i][j], isRevealed: true})
+                        }
+                    }
                 }
             }
             setUsefulClicks(oldUsefulClicks => oldUsefulClicks + 1)
@@ -502,6 +513,8 @@ export default function GameBoard(props) {
         setTime(0)
         setUsefulClicks(0)
         setWastedClicks(0)
+        setFinished1stClick(false)
+        setFirstRevealedPos(null)
     }
     
     /**
@@ -541,14 +554,51 @@ export default function GameBoard(props) {
         }
     }, [gameStatus])
 
+    React.useEffect(() => {
+        if (gameStatus === "onGoing") {
+            // let firstRevealedPos = null
+            // for (let i = 0; i < height; i++) {
+            //     for (let j = 0; j < width; j++) {
+            //         if (board[i][j].isRevealed && board[i][j].value === "*") {
+            //             firstRevealedPos = [i, j]
+            //             break
+            //         }
+            //     }
+            // }
+            setFinished1stClick(true)
+            if (firstRevealedPos) {
+                setBoard(generateTiles(firstRevealedPos.row, firstRevealedPos.column))
+                setUsefulClicks(0)
+            }
+        }
+    }, [gameStatus])
+
+    React.useEffect(() => {
+        if (firstRevealedPos && finished1stClick) {
+            // for (let i = 0; i < height; i++) {
+            //     for (let j = 0; j < width; j++) {
+            //         if (board[i][j].isRevealed) {
+            //             board[i][j].value === 0
+            //                 ? revealZeroesAroundTile(i, j)
+            //                 : revealTile(i, j)
+            //         }
+            //     }
+            // }
+            board[firstRevealedPos.row][firstRevealedPos.column].value === 0
+                ? revealZeroesAroundTile(firstRevealedPos.row, firstRevealedPos.column)
+                : revealTile(firstRevealedPos.row, firstRevealedPos.column)
+        }
+    }, [finished1stClick])
+
     /**
      * if we haven't win nor lose the game:
      * if the board contains a revealed mine, the game is lost
      */
     React.useEffect(() => {
-        if (gameStatus !== "lose" && gameStatus !== "win" &&
-        board.some(row => row.some(tile => tile.value === "*" && tile.isRevealed))) {
-            loseGame()
+        if (finished1stClick && board.some(row => row.some(tile => tile.value === "*" && tile.isRevealed))) {
+            if (gameStatus === "onGoing") {
+                loseGame()
+            }
         }
     }, [board])
 
@@ -590,7 +640,7 @@ export default function GameBoard(props) {
             />
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
-                time={(endTime - startTime) / 1000 === 0
+                time={usefulClicks + wastedClicks === 1
                     ? 0.001
                     : (endTime - startTime) / 1000}
                 threeBV={threeBV}
