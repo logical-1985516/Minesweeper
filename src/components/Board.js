@@ -10,9 +10,7 @@ export default function Board(props) {
         isRevealed={tile.isRevealed}
         isAutoRevealed={tile.isAutoRevealed}
         revealTile={() => {
-            return tile.isFlagged
-                ? null
-                : tile.isRevealed
+            return tile.isRevealed
                 ? props.chord(tile.row, tile.column)
                 : tile.value === 0
                 ? props.revealZeroesAroundTile(tile.row, tile.column)

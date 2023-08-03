@@ -192,7 +192,7 @@ export default function GameBoard(props) {
 
     function revealTile(tileRow, tileColumn) {
         if (gameStatus !== "win" && gameStatus !== "lose") {
-            if (board[tileRow][tileColumn].isRevealed) {
+            if (board[tileRow][tileColumn].isRevealed || board[tileRow][tileColumn].isFlagged) {
                 setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
                 return
             }
@@ -347,7 +347,7 @@ export default function GameBoard(props) {
         if (gameStatus === "win" || gameStatus === "lose") {
             return
         }
-        if (board[tileRow][tileColumn].isRevealed) {
+        if (board[tileRow][tileColumn].isRevealed || board[tileRow][tileColumn].isFlagged) {
             setWastedClicks(oldWastedClicks => oldWastedClicks + 1)
             return
         }
