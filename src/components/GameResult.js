@@ -7,22 +7,28 @@ export default function GameResult(props) {
     const gameProgress = props.current3BV / props.threeBV
     const estimatedTime = props.time / gameProgress
     const threeBVPerSecond = props.current3BV / props.time
-    const totalClicks = props.usefulClicks + props.wastedClicks
+    const usefulClicks = props.usefulLeftClicks + props.usefulRightClicks + props.usefulChords
+    const wastedClicks = props.wastedLeftClicks + props.wastedRightClicks + props.wastedChords
+    const totalClicks = usefulClicks + wastedClicks
     const RQP = props.time / threeBVPerSecond
     const IOS = Math.log(threeBVPerSecond) / Math.log(props.time)
-    const usefulClicksPerSecond = props.usefulClicks / props.time
+    const usefulClicksPerSecond = usefulClicks / props.time
     const clicksPerSecond = totalClicks / props.time
     const efficiency = props.current3BV / totalClicks
-    const throughput = props.current3BV / props.usefulClicks
-    const correctness = props.usefulClicks / totalClicks
+    const throughput = props.current3BV / usefulClicks
+    const correctness = usefulClicks / totalClicks
 
     async function addGameResult() {
         addDoc(resultsCollection, {
             time: props.time,
             threeBV: props.threeBV,
             current3BV: props.current3BV,
-            usefulClicks: props.usefulClicks,
-            wastedClicks: props.wastedClicks,
+            usefulLeftClicks: props.usefulLeftClicks,
+            usefulRightClicks: props.usefulRightClicks,
+            usefulChords: props.usefulChords,
+            wastedLeftClicks: props.wastedLeftClicks,
+            wastedRightClicks: props.wastedRightClicks,
+            wastedChords: props.wastedChords
         })
     }
 
@@ -56,13 +62,37 @@ export default function GameResult(props) {
                 <div className="gameResult--click-stats">
                     <div className="gameResult--title">Clicks</div>
                     <div>
-                        Useful Clicks: {props.usefulClicks}
+                        Useful Clicks: {usefulClicks}
                     </div>
                     <div>
-                        Wasted Clicks: {props.wastedClicks}
+                        Wasted Clicks: {wastedClicks}
                     </div>
                     <div>
                         Total Clicks: {totalClicks}
+                    </div>
+                </div>
+                <div className="gameResult--usefulClick-stats">
+                    <div className="gameResult--title">Useful Clicks</div>
+                    <div>
+                        Left Clicks: {props.usefulLeftClicks}
+                    </div>
+                    <div>
+                        Right Clicks: {props.usefulRightClicks}
+                    </div>
+                    <div>
+                        Chords: {props.usefulChords}
+                    </div>
+                </div>
+                <div className="gameResult--wastedClick-stats">
+                    <div className="gameResult--title">Wasted Clicks</div>
+                    <div>
+                        Left Clicks: {props.wastedLeftClicks}
+                    </div>
+                    <div>
+                        Right Clicks: {props.wastedRightClicks}
+                    </div>
+                    <div>
+                        Chords: {props.wastedChords}
                     </div>
                 </div>
             </div>

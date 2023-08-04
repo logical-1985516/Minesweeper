@@ -212,8 +212,16 @@ body {
     background-color: lightgreen;
 }
 
-.gameResult--click-stats, .gameResult--efficiency-metric {
+.gameResult--click-stats {
     background-color: #9dd0e1;
+}
+
+.gameResult--usefulClick-stats {
+    background-color: yellow;
+}
+
+.gameResult--wastedClick-stats {
+    background-color: violet;
 }
 
 .gameResult--speed-metric {
