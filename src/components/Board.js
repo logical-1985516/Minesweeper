@@ -8,7 +8,6 @@ export default function Board(props) {
         row={tile.row}
         column={tile.column}
         isRevealed={tile.isRevealed}
-        isAutoRevealed={tile.isAutoRevealed}
         revealTile={() => {
             return tile.isRevealed
                 ? props.chord(tile.row, tile.column)
@@ -18,6 +17,7 @@ export default function Board(props) {
         }}
         isFlagged={tile.isFlagged}
         flagTile={() => props.flagTile(tile.row, tile.column)}
+        gameStatus={props.gameStatus}
     />))
 
     const styles = {

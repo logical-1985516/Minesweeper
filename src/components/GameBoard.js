@@ -131,7 +131,6 @@ export default function GameBoard(props) {
                     column: j,
                     isRevealed: false,
                     isFlagged: false,
-                    isAutoRevealed: false,
                     isFlaggedBefore: false
                 }
             }
@@ -482,27 +481,16 @@ export default function GameBoard(props) {
      * 3. wrongly flagged tiles
      */
     function loseGame() {
-            setEndTime(Date.now())
-        setGameStatus("lose")
+        setEndTime(Date.now())
+        setGameStatus("lose") // tiles would be autorevealed. See Tile component.
         setCurrent3BV(findCurrent3BV())
-        setBoard(oldBoard => oldBoard.map(row => row.map(tile => {
-            return (!tile.isRevealed && tile.value !== "*") || 
-            (!tile.isFlagged && !tile.isRevealed && tile.value === "*") ||
-            (tile.isFlagged && tile.value !== "*")
-                ? {...tile, isAutoRevealed: true}
-                : tile
-        })))
     }
 
     function winGame() {
         setEndTime(Date.now())
-        setGameStatus("win")
+        setGameStatus("win") // tiles would be autorevealed. See Tile component.
         setMinesLeft(0)
         setCurrent3BV(threeBV)
-        setBoard(board.map(row => 
-            row.map(tile => tile.value === "*" && !tile.isFlagged
-                ? { ...tile, isAutoRevealed: true }
-                : tile)))
     }
 
     function resetBoard() {
@@ -559,15 +547,6 @@ export default function GameBoard(props) {
 
     React.useEffect(() => {
         if (gameStatus === "onGoing") {
-            // let firstRevealedPos = null
-            // for (let i = 0; i < height; i++) {
-            //     for (let j = 0; j < width; j++) {
-            //         if (board[i][j].isRevealed && board[i][j].value === "*") {
-            //             firstRevealedPos = [i, j]
-            //             break
-            //         }
-            //     }
-            // }
             setFinished1stClick(true)
             if (firstRevealedPos) {
                 console.log("hi")
@@ -579,15 +558,6 @@ export default function GameBoard(props) {
 
     React.useEffect(() => {
         if (firstRevealedPos && finished1stClick) {
-            // for (let i = 0; i < height; i++) {
-            //     for (let j = 0; j < width; j++) {
-            //         if (board[i][j].isRevealed) {
-            //             board[i][j].value === 0
-            //                 ? revealZeroesAroundTile(i, j)
-            //                 : revealTile(i, j)
-            //         }
-            //     }
-            // }
             board[firstRevealedPos.row][firstRevealedPos.column].value === 0
                 ? revealZeroesAroundTile(firstRevealedPos.row, firstRevealedPos.column)
                 : revealTile(firstRevealedPos.row, firstRevealedPos.column)
@@ -641,6 +611,7 @@ export default function GameBoard(props) {
                 revealZeroesAroundTile={revealZeroesAroundTile}
                 revealTile={revealTile}
                 flagTile={flagTile}
+                gameStatus={gameStatus}
             />
             {(gameStatus === "win" || gameStatus === "lose") && 
             <GameResult 
@@ -658,13 +629,8 @@ export default function GameBoard(props) {
                 wastedChords={wastedChords}
                 showMetricsData={showMetricsData}
                 boardProperties={props.boardProperties}
+                board={board}
             />}
-            <div>ULC: {usefulLeftClicks}</div>
-            <div>URC: {usefulRightClicks}</div>
-            <div>UC: {usefulChords}</div>
-            <div>WLC: {wastedLeftClicks}</div>
-            <div>WRC: {wastedRightClicks}</div>
-            <div>WC: {wastedChords}</div>
         </div>
     )
 }

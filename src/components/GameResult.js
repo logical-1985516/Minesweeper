@@ -17,6 +17,12 @@ export default function GameResult(props) {
     const efficiency = props.current3BV / totalClicks
     const throughput = props.current3BV / usefulClicks
     const correctness = usefulClicks / totalClicks
+    const boardData = props.board.map(row => row.map(tile => ({
+        key: tile.id,
+        value: tile.value,
+        isRevealed: tile.isRevealed,
+        isFlagged: tile.isFlagged
+    })))
 
     async function addGameResult() {
         addDoc(resultsCollection, {
