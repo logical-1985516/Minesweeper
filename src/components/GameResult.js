@@ -22,19 +22,21 @@ export default function GameResult(props) {
         value: tile.value,
         isRevealed: tile.isRevealed,
         isFlagged: tile.isFlagged
-    })))
+    }))).flat()
 
     async function addGameResult() {
         addDoc(resultsCollection, {
             time: props.time,
-            threeBV: props.threeBV,
-            current3BV: props.current3BV,
+            // threeBV: props.threeBV,
+            // current3BV: props.current3BV,
             usefulLeftClicks: props.usefulLeftClicks,
             usefulRightClicks: props.usefulRightClicks,
             usefulChords: props.usefulChords,
             wastedLeftClicks: props.wastedLeftClicks,
             wastedRightClicks: props.wastedRightClicks,
-            wastedChords: props.wastedChords
+            wastedChords: props.wastedChords,
+            board: boardData,
+            width: props.width
         })
     }
 

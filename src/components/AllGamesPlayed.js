@@ -17,6 +17,33 @@ export default function AllGamesPlayed(props) {
         return unsubscribe
     }, [])
 
+    function retrieveBoardData(board) {
+        console.log(board)
+        //return props.retrieveBoardData(board)
+    }
+
+    const showBoardElements = gamesResults && gamesResults.map(gameResults => {
+        const height = gameResults.board.length / gameResults.width
+        const newBoard = []
+        let curr = 0
+        for (let i = 0; i < height; i++) {
+            newBoard.push([])
+            for (let j = 0; j < gameResults.width; j++) {
+                newBoard[i].push(gameResults.board[curr])
+                curr++
+            }
+        }
+        return (
+            <div>
+                <button 
+                    onClick={() => retrieveBoardData(newBoard)}
+                >
+                    Show board
+                </button>
+            </div>
+        )
+    })
+
     function getResults(stat) {
         return gamesResults && (stat === "time"
             ? gamesResults.map(gameResults => <div>{gameResults[stat]}s</div>)
@@ -105,6 +132,9 @@ export default function AllGamesPlayed(props) {
 
     return (
         <div className="allGamesPlayed--container">
+            <span>
+                {showBoardElements}
+            </span>
             <span className="allGamesPlayed--stats">
                 <div>Time</div>
                 {getResults("time")}

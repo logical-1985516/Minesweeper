@@ -549,7 +549,6 @@ export default function GameBoard(props) {
         if (gameStatus === "onGoing") {
             setFinished1stClick(true)
             if (firstRevealedPos) {
-                console.log("hi")
                 setBoard(generateTiles(firstRevealedPos.row, firstRevealedPos.column))
                 setUsefulLeftClicks(0)
             }
@@ -630,6 +629,7 @@ export default function GameBoard(props) {
                 showMetricsData={showMetricsData}
                 boardProperties={props.boardProperties}
                 board={board}
+                width={width}
             />}
         </div>
     )
