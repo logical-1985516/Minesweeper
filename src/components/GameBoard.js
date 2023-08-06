@@ -10,6 +10,7 @@ export default function GameBoard(props) {
     const width = props.boardProperties.width
     const initialMines = props.boardProperties.initialMines
     const [minesLeft, setMinesLeft] = React.useState(props.initialMines)
+    const oldGameData = props.oldGameData
     const [board, setBoard] = React.useState(generateTiles)
     const [time, setTime] = React.useState(0)
     const [startTime, setStartTime] = React.useState()
@@ -187,7 +188,7 @@ export default function GameBoard(props) {
     }
 
     function revealTile(tileRow, tileColumn) {
-        if (gameStatus !== "win" && gameStatus !== "lose") {
+        if (gameStatus === "" || gameStatus === "onGoing") {
             if (board[tileRow][tileColumn].isRevealed || board[tileRow][tileColumn].isFlagged) {
                 setWastedLeftClicks(oldWastedLeftClicks => oldWastedLeftClicks + 1)
                 return
@@ -222,7 +223,7 @@ export default function GameBoard(props) {
      * @param {number} tileColumn column of the tile
      */
     function chord(tileRow, tileColumn) {
-        if (gameStatus === "win" || gameStatus === "lose") {
+        if (gameStatus !== "" && gameStatus !== "onGoing") {
             return
         }
         
@@ -340,7 +341,7 @@ export default function GameBoard(props) {
      * @param {number} tileCol column of the tile
      */
     function revealZeroesAroundTile(tileRow, tileColumn) {
-        if (gameStatus === "win" || gameStatus === "lose") {
+        if (gameStatus !== "" && gameStatus !== "onGoing") {
             return
         }
         if (board[tileRow][tileColumn].isRevealed || board[tileRow][tileColumn].isFlagged) {
@@ -386,7 +387,7 @@ export default function GameBoard(props) {
      * @param {string} tileId id of the tile (created by nanoid)
      */
     function flagTile(tileRow, tileColumn) {
-        if (gameStatus !== "win" && gameStatus !== "lose") {
+        if (gameStatus === "" || gameStatus === "onGoing") {
             if (board[tileRow][tileColumn].isRevealed) {
                 setWastedRightClicks(oldWastedRightClicks => oldWastedRightClicks + 1)
                 return
@@ -580,7 +581,7 @@ export default function GameBoard(props) {
      * if the all the numbers are revealed, the game is won
      */
     React.useEffect(() => {
-        if (gameStatus !== "win" && gameStatus !== "lose" && board.every(row => 
+        if (gameStatus === "onGoing" && board.every(row => 
             row.every(tile => tile.value === "*" || tile.isRevealed))) {
             winGame()
         }
@@ -593,6 +594,25 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         resetBoard()
     }, [difficulty, height, width, initialMines])
+
+    React.useEffect(() => {
+        if (props.oldGameData) {
+            setGameStatus("viewOldGame")
+            setBoard(oldGameData.board)
+            setStartTime(0)
+            setEndTime(1000 * oldGameData.time)
+            setMinesLeft(initialMines - oldGameData.flags)
+            setTime(Math.floor(oldGameData.time))
+            set3BV(oldGameData.threeBV)
+            setCurrent3BV(oldGameData.current3BV)
+            setUsefulLeftClicks(oldGameData.usefulLeftClicks)
+            setUsefulRightClicks(oldGameData.usefulRightClicks)
+            setUsefulChords(oldGameData.usefulChords)
+            setWastedLeftClicks(oldGameData.wastedLeftClicks)
+            setWastedRightClicks(oldGameData.wastedRightClicks)
+            setWastedChords(oldGameData.wastedChords)
+        }
+    }, [props.oldGameData])
     
     return (
         <div className="gameBoard--container">
@@ -612,7 +632,7 @@ export default function GameBoard(props) {
                 flagTile={flagTile}
                 gameStatus={gameStatus}
             />
-            {(gameStatus === "win" || gameStatus === "lose") && 
+            {(gameStatus === "win" || gameStatus === "lose" || gameStatus === "viewOldGame") && 
             <GameResult 
                 time={usefulLeftClicks + usefulRightClicks + usefulChords + 
                     + wastedLeftClicks + wastedRightClicks + wastedChords === 1
@@ -630,6 +650,8 @@ export default function GameBoard(props) {
                 boardProperties={props.boardProperties}
                 board={board}
                 width={width}
+                difficulty={difficulty}
+                gameStatus={gameStatus}
             />}
         </div>
     )

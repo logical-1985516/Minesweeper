@@ -20,6 +20,14 @@ export default function Navbar(props) {
         props.changeShowMetricsData(formData)
     }
 
+    function retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
+        current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+        wastedRightClicks, wastedChords) {
+        props.retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
+            current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+            wastedRightClicks, wastedChords)
+    }
+
     const styles = {
         borderBottom: itemOpen
             ? "2px solid black"
@@ -44,6 +52,7 @@ export default function Navbar(props) {
             {itemOpen === "changeBoard" && 
             <ChangeBoard 
                 changeBoardProperties={changeBoardProperties}
+                boardProperties={props.boardProperties}
             />}
             {itemOpen === "settings" && 
             <Settings 
@@ -53,6 +62,7 @@ export default function Navbar(props) {
             {itemOpen === "allGamesPlayed" &&
             <AllGamesPlayed 
                 showMetricsData={props.showMetricsData}
+                retrieveGameData={retrieveGameData}
             />}
             </div>}
         </nav>

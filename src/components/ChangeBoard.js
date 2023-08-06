@@ -2,13 +2,13 @@ import React from "react"
 
 export default function ChangeBoard(props) {
     const [currentBoard, setCurrentBoard] = React.useState(
-        JSON.parse(localStorage.getItem("currentBoard")) || {
+        props.boardProperties || {
         difficulty: "Beginner",
         height: 8,
         width: 8,
         initialMines: 10
     })
-    console.log(JSON.parse(localStorage.getItem("currentBoard")))
+
     /**
      * The properties that we are going to change to
      */
@@ -45,7 +45,6 @@ export default function ChangeBoard(props) {
             boardProperties.width = Number(boardProperties.width)
             boardProperties.initialMines = Number(boardProperties.initialMines)
         } else {
-            console.log("please select valid size")
             return
         }
         props.changeBoardProperties(boardProperties)

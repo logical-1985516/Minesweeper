@@ -1,4 +1,5 @@
 import React from "react"
+import OldGameResult from "./OldGameResult"
 import { resultsCollection } from "../firebase"
 import { onSnapshot } from "firebase/firestore"
 
@@ -17,32 +18,35 @@ export default function AllGamesPlayed(props) {
         return unsubscribe
     }, [])
 
-    function retrieveBoardData(board) {
-        console.log(board)
-        //return props.retrieveBoardData(board)
+    function retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
+        current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+        wastedRightClicks, wastedChords) {
+        props.retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
+            current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+            wastedRightClicks, wastedChords)
     }
 
-    const showBoardElements = gamesResults && gamesResults.map(gameResults => {
-        const height = gameResults.board.length / gameResults.width
-        const newBoard = []
-        let curr = 0
-        for (let i = 0; i < height; i++) {
-            newBoard.push([])
-            for (let j = 0; j < gameResults.width; j++) {
-                newBoard[i].push(gameResults.board[curr])
-                curr++
-            }
-        }
-        return (
-            <div>
-                <button 
-                    onClick={() => retrieveBoardData(newBoard)}
-                >
-                    Show board
-                </button>
-            </div>
-        )
-    })
+    // const showBoardElements = gamesResults && gamesResults.map(gameResults => {
+    //     const height = gameResults.board.length / gameResults.width
+    //     const newBoard = []
+    //     let curr = 0
+    //     for (let i = 0; i < height; i++) {
+    //         newBoard.push([])
+    //         for (let j = 0; j < gameResults.width; j++) {
+    //             newBoard[i].push(gameResults.board[curr])
+    //             curr++
+    //         }
+    //     }
+    //     return (
+    //         <div>
+    //             <button 
+    //                 onClick={() => retrieveBoardData(newBoard)}
+    //             >
+    //                 Show board
+    //             </button>
+    //         </div>
+    //     )
+    // })
 
     function getResults(stat) {
         return gamesResults && (stat === "time"
@@ -130,81 +134,110 @@ export default function AllGamesPlayed(props) {
         )
     })
 
+    const oldGameResultElements = gamesResults && gamesResults.map(gameResult => 
+        <OldGameResult 
+            key={gameResult.id}
+            gameResult={gameResult}
+            showMetricsData={showMetricsData}
+            retrieveGameData={retrieveGameData}
+        />
+    )
+
     return (
-        <div className="allGamesPlayed--container">
-            <span>
-                {showBoardElements}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Time</div>
-                {getResults("time")}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Estimated Time</div>
-                {estimatedTimeElements}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>3BV</div>
-                {getResults("threeBV")}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Current 3BV</div>
-                {getResults("current3BV")}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Game Progress</div>
-                {gameProgressElements}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Useful Clicks</div>
-                {getResults("usefulClicks")}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Wasted Clicks</div>
-                {getResults("wastedClicks")}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>Total Clicks</div>
-                {totalClicksElements}
-            </span>
-            <span className="allGamesPlayed--stats">
-                <div>3BV/s</div>
-                {threeBVPerSecondElements}
-            </span>
-            {showMetricsData.showRQP &&
-            <span className="allGamesPlayed--stats">
-                <div>RQP</div>
-                {RQPElements}
-            </span>}
-            {showMetricsData.showIOS &&
-            <span className="allGamesPlayed--stats">
-                <div>IOS</div>
-                {IOSElements}
-            </span>}
-            {showMetricsData.showClicksPerSecond && 
-            <span className="allGamesPlayed--stats">
-                <div>CL/s</div>
-                {clicksPerSecondElements}
-            </span>}
-            {showMetricsData.showUsefulClicksPerSecond &&
-            <span className="allGamesPlayed--stats">
-                <div>Useful CL/s</div>
-                {usefulClicksPerSecondElements}
-            </span>}
-            <span className="allGamesPlayed--stats">
-                <div>Efficiency</div>
-                {efficiencyElements}
-            </span>
-            {showMetricsData.showThroughput &&
-            <span className="allGamesPlayed--stats">
-                <div>Throughput</div>
-                {throughputElements}
-            </span>}
-            {showMetricsData.showCorrectness &&
-            <span className="allGamesPlayed--stats">
-                <div>Correctness</div>
-                {correctnessElements}
-            </span>}
-        </div>
+        <table>
+            <th>View</th>
+            <th>Difficulty</th>
+            <th>Board</th>
+            <th>Time</th>
+            <th>Est Time</th>
+            <th>3BV</th>
+            <th>Useful Clicks</th>
+            <th>Wasted Clicks</th>
+            <th>Clicks</th>
+            <th>3BV/s</th>
+            {showMetricsData.showRQP &&<th>RQP</th>}
+            {showMetricsData.showIOS && <th>IOS</th>}
+            {showMetricsData.showClicksPerSecond && <th>CL/s</th>}
+            {showMetricsData.showUsefulClicksPerSecond && <th>UCL/s</th>}
+            <th>Eff</th>
+            {showMetricsData.showThroughput && <th>Thrp</th>}
+            {showMetricsData.showCorrectness && <th>Corr</th>}
+            {oldGameResultElements}
+        </table>
+        // <div className="allGamesPlayed--container">
+        //     <span>
+        //         {showBoardElements}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Time</div>
+        //         {getResults("time")}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Estimated Time</div>
+        //         {estimatedTimeElements}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>3BV</div>
+        //         {getResults("threeBV")}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Current 3BV</div>
+        //         {getResults("current3BV")}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Game Progress</div>
+        //         {gameProgressElements}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Useful Clicks</div>
+        //         {getResults("usefulClicks")}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Wasted Clicks</div>
+        //         {getResults("wastedClicks")}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Total Clicks</div>
+        //         {totalClicksElements}
+        //     </span>
+        //     <span className="allGamesPlayed--stats">
+        //         <div>3BV/s</div>
+        //         {threeBVPerSecondElements}
+        //     </span>
+        //     {showMetricsData.showRQP &&
+        //     <span className="allGamesPlayed--stats">
+        //         <div>RQP</div>
+        //         {RQPElements}
+        //     </span>}
+        //     {showMetricsData.showIOS &&
+        //     <span className="allGamesPlayed--stats">
+        //         <div>IOS</div>
+        //         {IOSElements}
+        //     </span>}
+        //     {showMetricsData.showClicksPerSecond && 
+        //     <span className="allGamesPlayed--stats">
+        //         <div>CL/s</div>
+        //         {clicksPerSecondElements}
+        //     </span>}
+        //     {showMetricsData.showUsefulClicksPerSecond &&
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Useful CL/s</div>
+        //         {usefulClicksPerSecondElements}
+        //     </span>}
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Efficiency</div>
+        //         {efficiencyElements}
+        //     </span>
+        //     {showMetricsData.showThroughput &&
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Throughput</div>
+        //         {throughputElements}
+        //     </span>}
+        //     {showMetricsData.showCorrectness &&
+        //     <span className="allGamesPlayed--stats">
+        //         <div>Correctness</div>
+        //         {correctnessElements}
+        //     </span>}
+        // </div>
     )
 }

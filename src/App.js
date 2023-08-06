@@ -8,8 +8,8 @@ export default function App() {
     const [boardProperties, setBoardProperties] = React.useState(
         JSON.parse(localStorage.getItem("currentBoard")) || {
             difficulty: "Beginner",
-            height: 8,
-            width: 8,
+            height: 9,
+            width: 9,
             initialMines: 10
     })
     
@@ -23,6 +23,10 @@ export default function App() {
         showCorrectness: false
     })
 
+    const [oldGameData, setOldGameData] = React.useState(
+        JSON.parse(localStorage.getItem("oldGameData"))
+    )
+
     function changeBoardProperties(boardProperties) {
         setBoardProperties(boardProperties)
     }
@@ -31,16 +35,43 @@ export default function App() {
         setShowMetricsData(formData)
     }
 
+    function retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
+        current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+        wastedRightClicks, wastedChords) {
+        setBoardProperties({
+            difficulty: difficulty,
+            height: height,
+            width: width,
+            initialMines: mines
+        })
+        setOldGameData({
+            board: newBoard,
+            flags: flags,
+            time: time,
+            threeBV: threeBV,
+            current3BV: current3BV,
+            usefulLeftClicks: usefulLeftClicks,
+            usefulRightClicks: usefulRightClicks,
+            usefulChords: usefulChords,
+            wastedLeftClicks: wastedLeftClicks,
+            wastedRightClicks: wastedRightClicks,
+            wastedChords: wastedChords
+        })
+    }
+
     return (
         <div className="app--container">
             <Navbar 
                 changeBoardProperties={changeBoardProperties}
                 changeShowMetricsData={changeShowMetricsData}
                 showMetricsData={showMetricsData}
+                retrieveGameData={retrieveGameData}
+                boardProperties={boardProperties}
             />
             <GameBoard 
                 boardProperties={boardProperties}
                 showMetricsData={showMetricsData}
+                oldGameData={oldGameData}
             />
             <Footer />
         </div>

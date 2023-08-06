@@ -36,12 +36,15 @@ export default function GameResult(props) {
             wastedRightClicks: props.wastedRightClicks,
             wastedChords: props.wastedChords,
             board: boardData,
-            width: props.width
+            width: props.width,
+            difficulty: props.difficulty
         })
     }
 
     React.useEffect(() => {
-        addGameResult()
+        if (props.gameStatus === "win" || props.gameStatus === "lose") {
+            addGameResult()
+        }
     }, [])
 
     return (

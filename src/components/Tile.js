@@ -1,14 +1,15 @@
 import React from "react"
 
 export default function Tile(props) {
-    const gameEnded = props.gameStatus === "win" || props.gameStatus === "lose"
+    const gameEnded = props.gameStatus === "win" || props.gameStatus === "lose" ||
+    props.gameStatus === "viewOldGame"
     /**
      * if game ended and tile is incorrectly flagged, turn it red.
      * if tile is not revealed nor flagged: if game has not yet ended, remain
      * white. Else, become darkgrey (if mine) or lightgrey (if number)
      */
     const styles = {
-        backgroundColor: props.gameStatus === "lose" && props.isFlagged && props.value !== "*"
+        backgroundColor: gameEnded && props.isFlagged && props.value !== "*"
             ? "red"
             : props.isFlagged
             ? "orange"
