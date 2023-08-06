@@ -4,8 +4,8 @@ export default function ChangeBoard(props) {
     const [currentBoard, setCurrentBoard] = React.useState(
         props.boardProperties || {
         difficulty: "Beginner",
-        height: 8,
-        width: 8,
+        height: 9,
+        width: 9,
         initialMines: 10
     })
 
@@ -29,8 +29,8 @@ export default function ChangeBoard(props) {
     function handleSubmit(event) {
         event.preventDefault()
         if (boardProperties.difficulty === "Beginner") {
-            boardProperties.height = 8
-            boardProperties.width = 8
+            boardProperties.height = 9
+            boardProperties.width = 9
             boardProperties.initialMines = 10
         } else if (boardProperties.difficulty === "Intermediate") {
             boardProperties.height = 16

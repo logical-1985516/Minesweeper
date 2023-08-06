@@ -601,7 +601,7 @@ export default function GameBoard(props) {
             setBoard(oldGameData.board)
             setStartTime(0)
             setEndTime(1000 * oldGameData.time)
-            setMinesLeft(initialMines - oldGameData.flags)
+            setMinesLeft(initialMines - oldGameData.correctFlags)
             setTime(Math.floor(oldGameData.time))
             set3BV(oldGameData.threeBV)
             setCurrent3BV(oldGameData.current3BV)
@@ -652,6 +652,7 @@ export default function GameBoard(props) {
                 width={width}
                 difficulty={difficulty}
                 gameStatus={gameStatus}
+                endTime={endTime}
             />}
         </div>
     )

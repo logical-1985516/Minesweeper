@@ -35,8 +35,8 @@ export default function App() {
         setShowMetricsData(formData)
     }
 
-    function retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
-        current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+    function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
+        threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
         setBoardProperties({
             difficulty: difficulty,
@@ -46,7 +46,7 @@ export default function App() {
         })
         setOldGameData({
             board: newBoard,
-            flags: flags,
+            correctFlags: correctFlags,
             time: time,
             threeBV: threeBV,
             current3BV: current3BV,

@@ -9,7 +9,7 @@ export default function OldGameResult(props) {
     const mines = findMines()
     const threeBV = find3BV()
     const current3BV = findCurrent3BV()
-    const flags = findFlags()
+    const correctFlags = findCorrectFlags()
 
     function createBoard() {
         const newBoard = []
@@ -36,19 +36,19 @@ export default function OldGameResult(props) {
         return mines
     }
 
-    function findFlags() {
+    function findCorrectFlags() {
         if (threeBV === current3BV) {
             return mines
         }
-        let flags = 0
+        let correctFlags = 0
         for (let i = 0; i < height; i++) {
             for (let j = 0; j < width; j++) {
                 if (newBoard[i][j].isFlagged && newBoard[i][j].value === "*") {
-                    flags++
+                    correctFlags++
                 }
             }
         }
-        return flags
+        return correctFlags
     }
 
     function find3BV() {
@@ -144,12 +144,12 @@ export default function OldGameResult(props) {
         return threeBV
     }
 
-    function retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
-        current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+    function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
+        threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
-        props.retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
-            current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
-            wastedRightClicks, wastedChords)
+        props.retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
+            threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, 
+            wastedLeftClicks, wastedRightClicks, wastedChords)
     }
 
     const gameProgress = current3BV / threeBV
@@ -164,24 +164,23 @@ export default function OldGameResult(props) {
     const efficiency = current3BV / totalClicks
     const throughput = current3BV / usefulClicks
     const correctness = usefulClicks / totalClicks
+    const date = new Date(data.date)
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", 
+        "September", "October", "November", "December"];
+    const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
+    const seconds = date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()
 
     return (
         <tr>
             <td>
                 <button onClick={() => retrieveGameData(newBoard, data.difficulty,
-                        height, width, mines, flags, data.time, threeBV, current3BV, 
+                        height, width, mines, correctFlags, data.time, threeBV, current3BV, 
                         data.usefulLeftClicks, data.usefulRightClicks, data.usefulChords, 
                         data.wastedLeftClicks, data.wastedRightClicks, data.wastedChords)}>
                     View
                 </button>
             </td>
-            <td>{height === 9 && width === 9 && mines === 10
-                ? "Beginner"
-                : height === 16 && width === 16 && mines === 40
-                ? "Intermediate"
-                : height === 16 && width === 30 && mines === 99
-                ? "Expert"
-                : "Custom"}</td>
+            <td>{data.difficulty}</td>
             <td>{height}x{width}/{mines}</td>
             <td>{data.time}s</td>
             <td>{Math.round(1000 * data.time * threeBV / current3BV) / 1000}s</td>
@@ -200,6 +199,9 @@ export default function OldGameResult(props) {
             <td>{Math.round(100 * efficiency)}%</td>
             {showMetricsData.showThroughput && <td>{Math.round(100 * throughput)}%</td>}
             {showMetricsData.showCorrectness && <td>{Math.round(100 * correctness)}%</td>}
+            <td>{`${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()
+                } ${date.getHours()}:${minutes}:${seconds}`}</td>
+            {/* <td>{date.toString().slice(4, 24)}</td> */}
         </tr>
     )
 }

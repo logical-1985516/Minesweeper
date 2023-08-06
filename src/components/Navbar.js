@@ -20,12 +20,12 @@ export default function Navbar(props) {
         props.changeShowMetricsData(formData)
     }
 
-    function retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
-        current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
+    function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
+        threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
-        props.retrieveGameData(newBoard, difficulty, height, width, mines, flags, time, threeBV, 
-            current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
-            wastedRightClicks, wastedChords)
+        props.retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time,
+            threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, 
+            wastedLeftClicks, wastedRightClicks, wastedChords)
     }
 
     const styles = {

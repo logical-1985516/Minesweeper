@@ -26,9 +26,8 @@ export default function GameResult(props) {
 
     async function addGameResult() {
         addDoc(resultsCollection, {
+            date: props.endTime,
             time: props.time,
-            // threeBV: props.threeBV,
-            // current3BV: props.current3BV,
             usefulLeftClicks: props.usefulLeftClicks,
             usefulRightClicks: props.usefulRightClicks,
             usefulChords: props.usefulChords,
