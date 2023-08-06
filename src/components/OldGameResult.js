@@ -7,9 +7,9 @@ export default function OldGameResult(props) {
     const height = data.board.length / width
     const newBoard = createBoard()
     const mines = findMines()
-    const flags = findFlags()
     const threeBV = find3BV()
     const current3BV = findCurrent3BV()
+    const flags = findFlags()
 
     function createBoard() {
         const newBoard = []
@@ -37,10 +37,13 @@ export default function OldGameResult(props) {
     }
 
     function findFlags() {
+        if (threeBV === current3BV) {
+            return mines
+        }
         let flags = 0
         for (let i = 0; i < height; i++) {
             for (let j = 0; j < width; j++) {
-                if (newBoard[i][j].isFlagged) {
+                if (newBoard[i][j].isFlagged && newBoard[i][j].value === "*") {
                     flags++
                 }
             }
