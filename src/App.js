@@ -23,6 +23,14 @@ export default function App() {
         showCorrectness: false
     })
 
+    const [tileSize, setTileSize] = React.useState(
+        JSON.parse(localStorage.getItem("tileSize")) || 24
+    )
+
+    const [numberSize, setNumberSize] = React.useState(
+        JSON.parse(localStorage.getItem("numberSize")) || 2 / 3
+    )
+
     const [oldGameData, setOldGameData] = React.useState(
         JSON.parse(localStorage.getItem("oldGameData"))
     )
@@ -33,6 +41,14 @@ export default function App() {
 
     function changeShowMetricsData(formData) {
         setShowMetricsData(formData)
+    }
+
+    function changeTileSize(newTileSize) {
+        setTileSize(newTileSize)
+    }
+
+    function changeNumberSize(newNumberSize) {
+        setNumberSize(newNumberSize)
     }
 
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
@@ -63,14 +79,18 @@ export default function App() {
         <div className="app--container">
             <Navbar 
                 changeBoardProperties={changeBoardProperties}
+                boardProperties={boardProperties}
                 changeShowMetricsData={changeShowMetricsData}
                 showMetricsData={showMetricsData}
+                changeTileSize={changeTileSize}
+                changeNumberSize={changeNumberSize}
                 retrieveGameData={retrieveGameData}
-                boardProperties={boardProperties}
             />
             <GameBoard 
                 boardProperties={boardProperties}
                 showMetricsData={showMetricsData}
+                tileSize={tileSize}
+                numberSize={numberSize}
                 oldGameData={oldGameData}
             />
             <Footer />

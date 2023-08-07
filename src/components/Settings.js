@@ -1,4 +1,5 @@
 import React from "react"
+import {nanoid} from "nanoid"
 
 export default function Settings(props) {
     const [formData, setFormData] = React.useState(
@@ -10,6 +11,15 @@ export default function Settings(props) {
         showThroughput: false,
         showCorrectness: false
     })
+    const [tileSize, setTileSize] = React.useState(
+        JSON.parse(localStorage.getItem("tileSize")) || 24)
+    const [openTileSizes, setOpenTileSizes] = React.useState(false)
+    const tileSizes = generateTileSizes()
+    const [numberSize, setNumberSize] = React.useState(
+        JSON.parse(localStorage.getItem("numberSize")) || 2 / 3
+    )
+    const [openNumberSizes, setOpenNumberSizes] = React.useState(false) 
+    const numberSizes = [1 / 4, 1 / 3, 1 / 2, 2 / 3, 3 / 4, 4 / 5, 9 / 10, 1]
 
     function handleChange(event) {
         const {name, checked} = event.target
@@ -18,62 +28,151 @@ export default function Settings(props) {
         })
     }
 
+    function generateTileSizes() {
+        const tileSizesArray = []
+        for (let i = 10; i < 42; i = i + 2) {
+            tileSizesArray.push(i)
+        }
+        return tileSizesArray
+    }
+
+    function changeTileSize(newTileSize) {
+        setTileSize(newTileSize)
+        toggleTileSizesDropDown()
+    }
+
+    function toggleTileSizesDropDown() {
+        setOpenTileSizes(oldOpenTileSizes => !oldOpenTileSizes)
+    }
+
+    function changeNumberSize(newNumberSize) {
+        setNumberSize(newNumberSize)
+        toggleNumberSizesDropDown()
+    }
+
+    function toggleNumberSizesDropDown() {
+        setOpenNumberSizes(oldOpenNumberSizes => !oldOpenNumberSizes)
+    }
+
     React.useEffect(() => {
         localStorage.setItem("advancedMetrics", JSON.stringify(formData))
         props.changeShowMetricsData(formData)
     }, [formData])
 
+    React.useEffect(() => {
+        localStorage.setItem("tileSize", tileSize)
+        props.changeTileSize(tileSize)
+    }, [tileSize])
+
+    React.useEffect(() => {
+        localStorage.setItem("numberSize", numberSize)
+        props.changeNumberSize(numberSize)
+    }, [numberSize])
+
+    const tileSizesElements = tileSizes.map(size => 
+        <div key={nanoid()}
+            onClick={() => changeTileSize(size)} 
+            style={{backgroundColor: size === tileSize ? "lightblue" : "none"}}
+            className="settings--tile-size">{size}</div>)
+
+    const numberSizesElements = numberSizes.map(size => 
+        <div key={nanoid()}
+            onClick={() => changeNumberSize(size)} 
+            style={{backgroundColor: Math.abs(size - numberSize) < 0.01 ? "lightblue" : "none"}}
+            className="settings--tile-size">{Math.round(100 * size)}%</div>)
+
+
     return (
-        <form>
-            <span>Show advanced performance metrics: </span>
-            <input 
-                id="showRQP"
-                name="showRQP"
-                type="checkbox"
-                checked={formData.showRQP}
-                onChange={handleChange}
-            />
-            <label htmlFor="showRQP">RQP</label>
-            <input 
-                id="showIOS"
-                name="showIOS"
-                type="checkbox"
-                checked={formData.showIOS}
-                onChange={handleChange}
-            />
-            <label htmlFor="showIOS">IOS</label>
-            <input 
-                id="showClicksPerSecond"
-                name="showClicksPerSecond"
-                type="checkbox"
-                checked={formData.showClicksPerSecond}
-                onChange={handleChange}
-            />
-            <label htmlFor="showClicksPerSecond">CL/s</label>
-            <input 
-                id="showUsefulClicksPerSecond"
-                name="showUsefulClicksPerSecond"
-                type="checkbox"
-                checked={formData.showUsefulClicksPerSecond}
-                onChange={handleChange}
-            />
-            <label htmlFor="showUsefulClicksPerSecond">UCL/s</label>
-            <input 
-                id="showThroughput"
-                name="showThroughput"
-                type="checkbox"
-                checked={formData.showThroughput}
-                onChange={handleChange}
-            />
-            <label htmlFor="showThroughput">Throughput</label>
-            <input 
-                id="showCorrectness"
-                name="showCorrectness"
-                type="checkbox"
-                checked={formData.showCorrectness}
-                onChange={handleChange}
-            />
-            <label htmlFor="showCorrectness">Correctness</label>
-        </form>
+        <div>
+            <form>
+                <span>Show advanced performance metrics: </span>
+                <input 
+                    id="showRQP"
+                    name="showRQP"
+                    type="checkbox"
+                    checked={formData.showRQP}
+                    onChange={handleChange}
+                />
+                <label htmlFor="showRQP">RQP</label>
+                <input 
+                    id="showIOS"
+                    name="showIOS"
+                    type="checkbox"
+                    checked={formData.showIOS}
+                    onChange={handleChange}
+                />
+                <label htmlFor="showIOS">IOS</label>
+                <input 
+                    id="showClicksPerSecond"
+                    name="showClicksPerSecond"
+                    type="checkbox"
+                    checked={formData.showClicksPerSecond}
+                    onChange={handleChange}
+                />
+                <label htmlFor="showClicksPerSecond">CL/s</label>
+                <input 
+                    id="showUsefulClicksPerSecond"
+                    name="showUsefulClicksPerSecond"
+                    type="checkbox"
+                    checked={formData.showUsefulClicksPerSecond}
+                    onChange={handleChange}
+                />
+                <label htmlFor="showUsefulClicksPerSecond">UCL/s</label>
+                <input 
+                    id="showThroughput"
+                    name="showThroughput"
+                    type="checkbox"
+                    checked={formData.showThroughput}
+                    onChange={handleChange}
+                />
+                <label htmlFor="showThroughput">Throughput</label>
+                <input 
+                    id="showCorrectness"
+                    name="showCorrectness"
+                    type="checkbox"
+                    checked={formData.showCorrectness}
+                    onChange={handleChange}
+                />
+                <label htmlFor="showCorrectness">Correctness</label>
+            </form>
+            <div className="settings--sizes-container">
+                <div className="settings--tile-container">
+                    <div>Tile Size: {tileSize}</div>
+                    <div>
+                        <button onClick={toggleTileSizesDropDown}
+                            className="settings--button">Select</button>
+                        {openTileSizes && 
+                        <div className="settings--tile-sizes-container">
+                        {tileSizesElements}
+                        </div>
+                        }
+                    </div>
+                </div>
+                <div className="settings--tile-container">
+                    <div>Number Size: {Math.round(100 * numberSize)}%</div>
+                    <div>
+                        <button onClick={toggleNumberSizesDropDown}
+                            className="settings--button">Select</button>
+                        {openNumberSizes &&
+                        <div className="settings--tile-sizes-container">
+                            {numberSizesElements}
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            {/* <form>
+                <label htmlFor="tileSize">Tile Size: </label>
+                <input
+                    id="tileSize"
+                    name="tileSize"
+                    type="number"
+                    onChange={changeTileSize}
+                    min={10}
+                    max={40}
+                    step={1}
+                />
+            </form> */}
+        </div>
     )
 }

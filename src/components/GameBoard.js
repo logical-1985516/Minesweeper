@@ -631,6 +631,8 @@ export default function GameBoard(props) {
                 revealTile={revealTile}
                 flagTile={flagTile}
                 gameStatus={gameStatus}
+                tileSize={props.tileSize}
+                numberSize={props.numberSize}
             />
             {(gameStatus === "win" || gameStatus === "lose" || gameStatus === "viewOldGame") && 
             <GameResult 

@@ -20,6 +20,14 @@ export default function Navbar(props) {
         props.changeShowMetricsData(formData)
     }
 
+    function changeTileSize(newTileSize) {
+        props.changeTileSize(newTileSize)
+    }
+
+    function changeNumberSize(newNumberSize) {
+        props.changeNumberSize(newNumberSize)
+    }
+
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
@@ -57,6 +65,8 @@ export default function Navbar(props) {
             {itemOpen === "settings" && 
             <Settings 
                 changeShowMetricsData={changeShowMetricsData}
+                changeTileSize={changeTileSize}
+                changeNumberSize={changeNumberSize}
             />
             }
             {itemOpen === "allGamesPlayed" &&

@@ -94,8 +94,45 @@ body {
     font-size: 16px;
 }
 
+.settings--sizes-container {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.settings--tile-container {
+    display: flex;
+    gap: 5px;
+}
+
+/* .settings--button {
+    background-color: blueviolet;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+} */
+
+.settings--tile-size {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.settings--tile-size:hover {
+    background-color: lightgrey;
+}
+
+.settings--tile-sizes-container {
+    background-color: white;
+    width: 42px;
+    border: 1px solid black;
+    position: absolute;
+}
+
 table, th, td {
-    border:1px solid black;
+    border: 1px solid black;
 }
 
 th, td {
@@ -169,17 +206,14 @@ th, td {
     display: grid;
 }
 
-.board--outline > div {
+.tile {
     width: 24px;
     height: 24px;
-    border: 2px solid black;
-    user-select: none;
-}
-
-.tile {
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 2px solid black;
+    user-select: none;
 }
 
 .gameResult--container {
