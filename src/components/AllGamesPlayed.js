@@ -27,6 +27,11 @@ export default function AllGamesPlayed(props) {
         setShowFontSizeDropdown(oldShowFontSizeDropdown => !oldShowFontSizeDropdown)
     }
 
+    function changeOldGamesFontSize(newFontSize) {
+        setOldGamesFontSize(newFontSize)
+        toggleFontSizeDropdown()
+    } 
+
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
@@ -38,12 +43,12 @@ export default function AllGamesPlayed(props) {
     const fontSizes = [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24]
 
     React.useEffect(() => {
-        localStorage.setItem("oldGamesFontSize")
+        localStorage.setItem("oldGamesFontSize", oldGamesFontSize)
     }, [oldGamesFontSize])
 
     const changeFontSizeElements = fontSizes.map(fontsize =>
         <div key={nanoid()}
-            onClick={() => setOldGamesFontSize(fontsize)}
+            onClick={() => changeOldGamesFontSize(fontsize)}
             style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
             className="settings--tile-size">{fontsize}</div>)
 
