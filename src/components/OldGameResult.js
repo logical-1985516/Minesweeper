@@ -180,6 +180,7 @@ export default function OldGameResult(props) {
                     View
                 </button>
             </td>
+            <td>{current3BV === threeBV ? "Win" : "Loss"}</td>
             <td>{data.gameMode}</td>
             <td>{data.difficulty}</td>
             <td>{height}x{width}/{mines}</td>

@@ -2,7 +2,7 @@ import React from "react"
 import OldGameResult from "./OldGameResult"
 import { nanoid } from "nanoid"
 import { resultsCollection } from "../firebase"
-import { onSnapshot } from "firebase/firestore"
+import { onSnapshot, getDocs, query, where, orderBy } from "firebase/firestore"
 
 export default function AllGamesPlayed(props) {
     const showMetricsData = props.showMetricsData
@@ -10,7 +10,14 @@ export default function AllGamesPlayed(props) {
     const [oldGamesFontSize, setOldGamesFontSize] = React.useState(
         JSON.parse(localStorage.getItem("oldGamesFontSize")) || 16
     )
-    const [showFontSizeDropdown, setShowFontSizeDropdown] = React.useState(false)
+    const [showDropdown, setShowDropdown] = React.useState("")
+    const [outcomeFilter, setOutcomeFilter] = React.useState("All")
+    //const [gameModes, setGameModes] = React.useState("")
+    // const q = outcomeFilter === "All" 
+    //     ? resultsCollection
+    //     : query(resultsCollection, where("outcome", "==", outcomeFilter))
+
+    // const sortedResults = query(resultsCollection, orderBy("date", "desc"))
 
     React.useEffect(() => {
         const unsubscribe = onSnapshot(resultsCollection, snapshot => {
@@ -21,16 +28,23 @@ export default function AllGamesPlayed(props) {
             setGamesResults(resultsArr)
         })
         return unsubscribe
-    }, [])
+    }, [outcomeFilter])
 
-    function toggleFontSizeDropdown() {
-        setShowFontSizeDropdown(oldShowFontSizeDropdown => !oldShowFontSizeDropdown)
+    function toggleDropdown(name) {
+        showDropdown === name
+            ? setShowDropdown("")
+            : setShowDropdown(name)
     }
 
     function changeOldGamesFontSize(newFontSize) {
         setOldGamesFontSize(newFontSize)
-        toggleFontSizeDropdown()
-    } 
+        toggleDropdown("fontSize")
+    }
+
+    function changeOutcomeFilter(newOutcome) {
+        setOutcomeFilter(newOutcome)
+        toggleDropdown("outcomeFilter")
+    }
 
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
@@ -52,6 +66,12 @@ export default function AllGamesPlayed(props) {
             style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
             className="dropdown-item">{fontsize}</div>)
 
+    const outcomeFilterElements = ["All", "Win", "Loss"].map(outcome => 
+        <div key={nanoid()}
+            onClick={() => changeOutcomeFilter(outcome)}
+            style={{backgroundColor: outcome === outcomeFilter ? "lightblue" : "none"}}
+            className="dropdown-item">{outcome}</div>)
+
     const oldGameResultElements = gamesResults && gamesResults.map(gameResult => 
         <OldGameResult 
             key={gameResult.id}
@@ -71,15 +91,30 @@ export default function AllGamesPlayed(props) {
                 <div className="label-and-dropdown">
                     <span>Font Size: {oldGamesFontSize}</span>
                     <div>
-                        <button onClick={toggleFontSizeDropdown}>Select</button>
-                        {showFontSizeDropdown && <div className="dropdown-container">
+                        <button onClick={() => toggleDropdown("fontSize")}>Select</button>
+                        {showDropdown === "fontSize" && <div className="dropdown-container">
                             {changeFontSizeElements}
                         </div>}
                     </div>
                 </div>
             </div>
+            {/* <div>
+                <div style={{marginBottom: "10px", textDecoration: "underline"}}>Filters</div>
+                <div style={{marginBottom: "5px"}}>
+                    <div className="label-and-dropdown">
+                        <span>Outcome: {outcomeFilter}</span>
+                        <div>
+                            <button onClick={() => toggleDropdown("outcomeFilter")}>Select</button>
+                            {showDropdown === "outcomeFilter" && <div className="dropdown-container">
+                                {outcomeFilterElements}
+                            </div>}
+                        </div>
+                    </div>
+                </div>
+            </div> */}
             <table style={styles}>
                 <th>View</th>
+                <th>Outcome</th>
                 <th>Game Mode</th>
                 <th>Difficulty</th>
                 <th>Board</th>
