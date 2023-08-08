@@ -17,10 +17,10 @@ export default function AllGamesPlayed(props) {
     //     ? resultsCollection
     //     : query(resultsCollection, where("outcome", "==", outcomeFilter))
 
-    // const sortedResults = query(resultsCollection, orderBy("date", "desc"))
+    const sortedResults = query(resultsCollection, orderBy("date", "desc"))
 
     React.useEffect(() => {
-        const unsubscribe = onSnapshot(resultsCollection, snapshot => {
+        const unsubscribe = onSnapshot(sortedResults, snapshot => {
             const resultsArr = snapshot.docs.map(doc => ({
                 ...doc.data(),
                 id: doc.id
@@ -28,7 +28,7 @@ export default function AllGamesPlayed(props) {
             setGamesResults(resultsArr)
         })
         return unsubscribe
-    }, [outcomeFilter])
+    }, [])
 
     function toggleDropdown(name) {
         showDropdown === name
@@ -66,11 +66,11 @@ export default function AllGamesPlayed(props) {
             style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
             className="dropdown-item">{fontsize}</div>)
 
-    const outcomeFilterElements = ["All", "Win", "Loss"].map(outcome => 
-        <div key={nanoid()}
-            onClick={() => changeOutcomeFilter(outcome)}
-            style={{backgroundColor: outcome === outcomeFilter ? "lightblue" : "none"}}
-            className="dropdown-item">{outcome}</div>)
+    // const outcomeFilterElements = ["All", "Win", "Loss"].map(outcome => 
+    //     <div key={nanoid()}
+    //         onClick={() => changeOutcomeFilter(outcome)}
+    //         style={{backgroundColor: outcome === outcomeFilter ? "lightblue" : "none"}}
+    //         className="dropdown-item">{outcome}</div>)
 
     const oldGameResultElements = gamesResults && gamesResults.map(gameResult => 
         <OldGameResult 
