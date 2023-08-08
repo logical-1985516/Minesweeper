@@ -114,9 +114,9 @@ body {
 } */
 
 .dropdown-item {
-    width: 40px;
     display: flex;
     justify-content: center;
+    padding: 0 10px;
 }
 
 .dropdown-item:hover {
@@ -125,7 +125,6 @@ body {
 
 .dropdown-container {
     background-color: white;
-    width: 42px;
     border: 1px solid black;
     position: absolute;
 }
