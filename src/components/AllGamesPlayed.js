@@ -50,7 +50,7 @@ export default function AllGamesPlayed(props) {
         <div key={nanoid()}
             onClick={() => changeOldGamesFontSize(fontsize)}
             style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
-            className="settings--tile-size">{fontsize}</div>)
+            className="dropdown-item">{fontsize}</div>)
 
     const oldGameResultElements = gamesResults && gamesResults.map(gameResult => 
         <OldGameResult 
@@ -68,11 +68,11 @@ export default function AllGamesPlayed(props) {
     return (
         <div>
             <div style={{marginBottom: "10px"}}>
-                <div className="settings--tile-container">
+                <div className="label-and-dropdown">
                     <span>Font Size: {oldGamesFontSize}</span>
                     <div>
                         <button onClick={toggleFontSizeDropdown}>Select</button>
-                        {showFontSizeDropdown && <div className="settings--tile-sizes-container">
+                        {showFontSizeDropdown && <div className="dropdown-container">
                             {changeFontSizeElements}
                         </div>}
                     </div>
@@ -80,6 +80,7 @@ export default function AllGamesPlayed(props) {
             </div>
             <table style={styles}>
                 <th>View</th>
+                <th>Game Mode</th>
                 <th>Difficulty</th>
                 <th>Board</th>
                 <th>Time</th>

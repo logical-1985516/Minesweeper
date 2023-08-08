@@ -95,13 +95,12 @@ body {
 }
 
 .settings--sizes-container {
-    margin-top: 10px;
     display: flex;
     justify-content: center;
     gap: 40px;
 }
 
-.settings--tile-container {
+.label-and-dropdown {
     display: flex;
     gap: 5px;
 }
@@ -114,17 +113,17 @@ body {
     border-radius: 5px;
 } */
 
-.settings--tile-size {
+.dropdown-item {
     width: 40px;
     display: flex;
     justify-content: center;
 }
 
-.settings--tile-size:hover {
+.dropdown-item:hover {
     background-color: lightgrey;
 }
 
-.settings--tile-sizes-container {
+.dropdown-container {
     background-color: white;
     width: 42px;
     border: 1px solid black;

@@ -73,18 +73,18 @@ export default function Settings(props) {
         <div key={nanoid()}
             onClick={() => changeTileSize(size)} 
             style={{backgroundColor: size === tileSize ? "lightblue" : "none"}}
-            className="settings--tile-size">{size}</div>)
+            className="dropdown-item">{size}</div>)
 
     const numberSizesElements = numberSizes.map(size => 
         <div key={nanoid()}
             onClick={() => changeNumberSize(size)} 
             style={{backgroundColor: Math.abs(size - numberSize) < 0.01 ? "lightblue" : "none"}}
-            className="settings--tile-size">{Math.round(100 * size)}%</div>)
+            className="dropdown-item">{Math.round(100 * size)}%</div>)
 
 
     return (
         <div>
-            <form>
+            <form style={{marginBottom: "10px"}}>
                 <span>Show advanced performance metrics: </span>
                 <input 
                     id="showRQP"
@@ -136,25 +136,25 @@ export default function Settings(props) {
                 <label htmlFor="showCorrectness">Correctness</label>
             </form>
             <div className="settings--sizes-container">
-                <div className="settings--tile-container">
+                <div className="label-and-dropdown">
                     <div>Tile Size: {tileSize}</div>
                     <div>
                         <button onClick={toggleTileSizesDropDown}
                             className="settings--button">Select</button>
                         {openTileSizes && 
-                        <div className="settings--tile-sizes-container">
+                        <div className="dropdown-container">
                         {tileSizesElements}
                         </div>
                         }
                     </div>
                 </div>
-                <div className="settings--tile-container">
+                <div className="label-and-dropdown">
                     <div>Number Size: {Math.round(100 * numberSize)}%</div>
                     <div>
                         <button onClick={toggleNumberSizesDropDown}
                             className="settings--button">Select</button>
                         {openNumberSizes &&
-                        <div className="settings--tile-sizes-container">
+                        <div className="dropdown-container">
                             {numberSizesElements}
                         </div>
                         }
