@@ -13,18 +13,22 @@ export default function AllGamesPlayed(props) {
     const [showDropdown, setShowDropdown] = React.useState("")
     const [outcomeFilter, setOutcomeFilter] = React.useState("All")
     const [gameModeFilter, setGameModeFilter] = React.useState("All")
+    const [difficultyFilter, setDifficultyFilter] = React.useState("All")
     //const [gameModes, setGameModes] = React.useState("")
     // const q = outcomeFilter === "All" 
     //     ? resultsCollection
     //     : query(resultsCollection, where("outcome", "==", outcomeFilter))
 
     const sortedResults = query(resultsCollection, orderBy("date", "desc"))
-    const q = gameModeFilter === "All"
+    const filterByGameMode = gameModeFilter === "All"
         ? sortedResults
         : query(sortedResults, where("gameMode", "==", gameModeFilter))
+    const filterByDifficulty = difficultyFilter === "All"
+        ? filterByGameMode
+        : query(filterByGameMode, where("difficulty", "==", difficultyFilter))
 
     React.useEffect(() => {
-        const unsubscribe = onSnapshot(q, snapshot => {
+        const unsubscribe = onSnapshot(filterByDifficulty, snapshot => {
             const resultsArr = snapshot.docs.map(doc => ({
                 ...doc.data(),
                 id: doc.id
@@ -32,7 +36,7 @@ export default function AllGamesPlayed(props) {
             setGamesResults(resultsArr)
         })
         return unsubscribe
-    }, [gameModeFilter])
+    }, [gameModeFilter, difficultyFilter])
 
     function toggleDropdown(name) {
         showDropdown === name
@@ -48,6 +52,11 @@ export default function AllGamesPlayed(props) {
     function changeGameModeFilter(newGameMode) {
         setGameModeFilter(newGameMode)
         toggleDropdown("gameModeFilter")
+    }
+
+    function changeDifficultyFilter(newDifficulty) {
+        setDifficultyFilter(newDifficulty)
+        toggleDropdown("difficultyFilter")
     }
 
     function changeOutcomeFilter(newOutcome) {
@@ -80,6 +89,13 @@ export default function AllGamesPlayed(props) {
         onClick={() => changeGameModeFilter(gameMode)}
         style={{backgroundColor: gameMode === gameModeFilter ? "lightblue" : "none"}}
         className="dropdown-item">{gameMode}</div>)
+
+    const difficultyFilterElements = ["All", "Beginner", "Intermediate", 
+        "Expert", "Custom"].map(difficulty =>
+        <div key={nanoid()}
+        onClick={() => changeDifficultyFilter(difficulty)}
+        style={{backgroundColor: difficulty === difficultyFilter ? "lightblue" : "none"}}
+        className="dropdown-item">{difficulty}</div>)
 
     // const outcomeFilterElements = ["All", "Win", "Loss"].map(outcome => 
     //     <div key={nanoid()}
@@ -318,6 +334,17 @@ export default function AllGamesPlayed(props) {
                             <button onClick={() => toggleDropdown("gameModeFilter")}>Select</button>
                             {showDropdown === "gameModeFilter" && <div className="dropdown-container">
                                 {gameModeFilterElements}
+                            </div>}
+                        </div>
+                    </div>
+                </div>
+                <div style={{marginBottom: "5px"}}>
+                    <div className="label-and-dropdown">
+                        <span>Difficulty: {difficultyFilter}</span>
+                        <div>
+                            <button onClick={() => toggleDropdown("difficultyFilter")}>Select</button>
+                            {showDropdown === "difficultyFilter" && <div className="dropdown-container">
+                                {difficultyFilterElements}
                             </div>}
                         </div>
                     </div>
