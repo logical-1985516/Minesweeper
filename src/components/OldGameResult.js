@@ -180,6 +180,7 @@ export default function OldGameResult(props) {
                     View
                 </button>
             </td>
+            <td>{data.gameMode}</td>
             <td>{data.difficulty}</td>
             <td>{height}x{width}/{mines}</td>
             <td>{data.time}s</td>

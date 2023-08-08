@@ -36,7 +36,8 @@ export default function GameResult(props) {
             wastedChords: props.wastedChords,
             board: boardData,
             width: props.width,
-            difficulty: props.difficulty
+            difficulty: props.difficulty,
+            gameMode: "Classic"
         })
     }
 
