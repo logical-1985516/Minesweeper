@@ -14,21 +14,25 @@ export default function AllGamesPlayed(props) {
     const [outcomeFilter, setOutcomeFilter] = React.useState("All")
     const [gameModeFilter, setGameModeFilter] = React.useState("All")
     const [difficultyFilter, setDifficultyFilter] = React.useState("All")
+    const [sortBy, setSortBy] = React.useState("Date")
     //const [gameModes, setGameModes] = React.useState("")
     // const q = outcomeFilter === "All" 
     //     ? resultsCollection
     //     : query(resultsCollection, where("outcome", "==", outcomeFilter))
 
-    const sortedResults = query(resultsCollection, orderBy("date", "desc"))
     const filterByGameMode = gameModeFilter === "All"
-        ? sortedResults
-        : query(sortedResults, where("gameMode", "==", gameModeFilter))
+        ? resultsCollection
+        : query(resultsCollection, where("gameMode", "==", gameModeFilter))
     const filterByDifficulty = difficultyFilter === "All"
         ? filterByGameMode
         : query(filterByGameMode, where("difficulty", "==", difficultyFilter))
+    const sorted = sortBy === "Date"
+        ? filterByDifficulty
+        : query(filterByDifficulty, orderBy("time"))
+    const sortedResults = query(sorted, orderBy("date", "desc"))
 
     React.useEffect(() => {
-        const unsubscribe = onSnapshot(filterByDifficulty, snapshot => {
+        const unsubscribe = onSnapshot(sortedResults, snapshot => {
             const resultsArr = snapshot.docs.map(doc => ({
                 ...doc.data(),
                 id: doc.id
@@ -36,7 +40,7 @@ export default function AllGamesPlayed(props) {
             setGamesResults(resultsArr)
         })
         return unsubscribe
-    }, [gameModeFilter, difficultyFilter])
+    }, [gameModeFilter, difficultyFilter, sortBy])
 
     function toggleDropdown(name) {
         showDropdown === name
@@ -64,6 +68,19 @@ export default function AllGamesPlayed(props) {
         toggleDropdown("outcomeFilter")
     }
 
+    function dropdownEvent(name, value, setStateFunction) {
+        setStateFunction(value)
+        toggleDropdown(name)
+    }
+
+    function generateDropdownElements(name, values, state, setStateFunction) {
+        return values.map(value =>
+            <div key={nanoid()}
+            onClick={() => dropdownEvent(name, value, setStateFunction)}
+            style={{backgroundColor: value === state ? "lightblue" : "none"}}
+            className="dropdown-item">{value}</div>)
+    }
+
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
@@ -78,24 +95,39 @@ export default function AllGamesPlayed(props) {
         localStorage.setItem("oldGamesFontSize", oldGamesFontSize)
     }, [oldGamesFontSize])
 
-    const changeFontSizeElements = fontSizes.map(fontsize =>
-        <div key={nanoid()}
-            onClick={() => changeOldGamesFontSize(fontsize)}
-            style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
-            className="dropdown-item">{fontsize}</div>)
+    const changeFontSizeElements = generateDropdownElements("fontSize",
+        [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24], oldGamesFontSize, setOldGamesFontSize)
+        // fontSizes.map(fontsize =>
+        // <div key={nanoid()}
+        //     onClick={() => changeOldGamesFontSize(fontsize)}
+        //     style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
+        //     className="dropdown-item">{fontsize}</div>)
 
-    const gameModeFilterElements = ["All", "Classic", "newGameMode"].map(gameMode =>
-        <div key={nanoid()}
-        onClick={() => changeGameModeFilter(gameMode)}
-        style={{backgroundColor: gameMode === gameModeFilter ? "lightblue" : "none"}}
-        className="dropdown-item">{gameMode}</div>)
+    const gameModeFilterElements = generateDropdownElements("gameModeFilter", 
+        ["All", "Classic", "newGameMode"], gameModeFilter, setGameModeFilter)
+        // ["All", "Classic", "newGameMode"].map(gameMode =>
+        // <div key={nanoid()}
+        // onClick={() => changeGameModeFilter(gameMode)}
+        // style={{backgroundColor: gameMode === gameModeFilter ? "lightblue" : "none"}}
+        // className="dropdown-item">{gameMode}</div>)
 
-    const difficultyFilterElements = ["All", "Beginner", "Intermediate", 
-        "Expert", "Custom"].map(difficulty =>
-        <div key={nanoid()}
-        onClick={() => changeDifficultyFilter(difficulty)}
-        style={{backgroundColor: difficulty === difficultyFilter ? "lightblue" : "none"}}
-        className="dropdown-item">{difficulty}</div>)
+    const difficultyFilterElements = generateDropdownElements("difficultyFilter", 
+        ["All", "Beginner", "Intermediate", "Expert", "Custom"], difficultyFilter, 
+        setDifficultyFilter)
+        // ["All", "Beginner", "Intermediate", 
+        // "Expert", "Custom"].map(difficulty =>
+        // <div key={nanoid()}
+        // onClick={() => changeDifficultyFilter(difficulty)}
+        // style={{backgroundColor: difficulty === difficultyFilter ? "lightblue" : "none"}}
+        // className="dropdown-item">{difficulty}</div>)
+
+    const sortByElements = generateDropdownElements("sortBy", 
+        ["Date", "Time"], sortBy, setSortBy)
+        // ["Date", "Time"].map(sortByThis =>
+        // <div key={nanoid()}
+        // onClick={() => changeGameModeFilter(sortByThis)}
+        // style={{backgroundColor: sortByThis === sortBy ? "lightblue" : "none"}}
+        // className="dropdown-item">{sortByThis}</div>)
 
     // const outcomeFilterElements = ["All", "Win", "Loss"].map(outcome => 
     //     <div key={nanoid()}
@@ -285,7 +317,9 @@ export default function AllGamesPlayed(props) {
     //     }
     //     return {
     //         outcome: current3BV === threeBV ? "Win" : "Loss",
-
+    //         height: height,
+    //         width: width,
+    //         mines: mines,
     // }})
 
     const oldGameResultElements = gamesResults && gamesResults.map(gameResult => 
@@ -315,40 +349,53 @@ export default function AllGamesPlayed(props) {
                 </div>
             </div>
             <div>
-                <div style={{marginBottom: "10px", textDecoration: "underline"}}>Filters</div>
-                {/* <div style={{marginBottom: "5px"}}>
-                    <div className="label-and-dropdown">
-                        <span>Outcome: {outcomeFilter}</span>
-                        <div>
-                            <button onClick={() => toggleDropdown("outcomeFilter")}>Select</button>
-                            {showDropdown === "outcomeFilter" && <div className="dropdown-container">
-                                {outcomeFilterElements}
-                            </div>}
+                <div>
+                    <div style={{marginBottom: "10px", textDecoration: "underline"}}>Filters</div>
+                    {/* <div style={{marginBottom: "5px"}}>
+                        <div className="label-and-dropdown">
+                            <span>Outcome: {outcomeFilter}</span>
+                            <div>
+                                <button onClick={() => toggleDropdown("outcomeFilter")}>Select</button>
+                                {showDropdown === "outcomeFilter" && <div className="dropdown-container">
+                                    {outcomeFilterElements}
+                                </div>}
+                            </div>
+                        </div>
+                    </div> */}
+                    <div style={{marginBottom: "5px"}}>
+                        <div className="label-and-dropdown">
+                            <span>Game Mode: {gameModeFilter}</span>
+                            <div>
+                                <button onClick={() => toggleDropdown("gameModeFilter")}>Select</button>
+                                {showDropdown === "gameModeFilter" && <div className="dropdown-container">
+                                    {gameModeFilterElements}
+                                </div>}
+                            </div>
                         </div>
                     </div>
-                </div> */}
-                <div style={{marginBottom: "5px"}}>
-                    <div className="label-and-dropdown">
-                        <span>Game Mode: {gameModeFilter}</span>
-                        <div>
-                            <button onClick={() => toggleDropdown("gameModeFilter")}>Select</button>
-                            {showDropdown === "gameModeFilter" && <div className="dropdown-container">
-                                {gameModeFilterElements}
-                            </div>}
+                    <div style={{marginBottom: "5px"}}>
+                        <div className="label-and-dropdown">
+                            <span>Difficulty: {difficultyFilter}</span>
+                            <div>
+                                <button onClick={() => toggleDropdown("difficultyFilter")}>Select</button>
+                                {showDropdown === "difficultyFilter" && <div className="dropdown-container">
+                                    {difficultyFilterElements}
+                                </div>}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div style={{marginBottom: "5px"}}>
                     <div className="label-and-dropdown">
-                        <span>Difficulty: {difficultyFilter}</span>
+                        <span>Sort By: {sortBy}</span>
                         <div>
-                            <button onClick={() => toggleDropdown("difficultyFilter")}>Select</button>
-                            {showDropdown === "difficultyFilter" && <div className="dropdown-container">
-                                {difficultyFilterElements}
+                            <button onClick={() => toggleDropdown("sortBy")}>Select</button>
+                            {showDropdown === "sortBy" && <div className="dropdown-container">
+                                {sortByElements}    
                             </div>}
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
             <table style={styles}>
                 <th>View</th>
