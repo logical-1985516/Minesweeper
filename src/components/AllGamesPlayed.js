@@ -1,7 +1,6 @@
 import React from "react"
 import OldGameResult from "./OldGameResult"
 import LabelAndDropdown from "./LabelAndDropdown"
-import { nanoid } from "nanoid"
 import { resultsCollection } from "../firebase"
 import { onSnapshot, query, where, orderBy } from "firebase/firestore"
 
@@ -265,7 +264,10 @@ export default function AllGamesPlayed(props) {
             correctFlags: correctFlags
     }})
 
-    const oldGameResultElements = gamesResults && oldGameResults.map(oldGameResult =>
+    const filterByOutcome = gamesResults && oldGameResults.filter(oldGameResult => 
+        outcomeFilter === "All" || oldGameResult.outcome === outcomeFilter)
+
+    const oldGameResultElements = gamesResults && filterByOutcome.map(oldGameResult =>
         <OldGameResult 
             key={oldGameResult.key}
             board={oldGameResult.board}
@@ -333,6 +335,16 @@ export default function AllGamesPlayed(props) {
             <div>
                 <div>
                     <div style={{marginBottom: "5px", textDecoration: "underline"}}>Filters</div>
+                    <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="Outcome"
+                        state={outcomeFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"outcomeFilter"}
+                        showDropdown={showDropdown}
+                        items={["All", "Win", "Loss"]}
+                        setStateFunction={setOutcomeFilter}
+                    />
                     {/* <div style={{marginBottom: "5px"}}>
                         <div className="label-and-dropdown">
                             <span>Outcome: {outcomeFilter}</span>
