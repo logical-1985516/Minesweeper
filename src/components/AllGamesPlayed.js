@@ -2,7 +2,7 @@ import React from "react"
 import OldGameResult from "./OldGameResult"
 import { nanoid } from "nanoid"
 import { resultsCollection } from "../firebase"
-import { onSnapshot, getDocs, query, where, orderBy, and } from "firebase/firestore"
+import { onSnapshot, query, where, orderBy } from "firebase/firestore"
 
 export default function AllGamesPlayed(props) {
     const showMetricsData = props.showMetricsData
@@ -26,9 +26,9 @@ export default function AllGamesPlayed(props) {
     const filterByDifficulty = difficultyFilter === "All"
         ? filterByGameMode
         : query(filterByGameMode, where("difficulty", "==", difficultyFilter))
-    const sorted = sortBy === "Date"
-        ? filterByDifficulty
-        : query(filterByDifficulty, orderBy("time"))
+    const sorted = sortBy === "Time"
+        ? query(filterByDifficulty, orderBy("time"))
+        : filterByDifficulty
     const sortedResults = query(sorted, orderBy("date", "desc"))
 
     React.useEffect(() => {
@@ -46,26 +46,6 @@ export default function AllGamesPlayed(props) {
         showDropdown === name
             ? setShowDropdown("")
             : setShowDropdown(name)
-    }
-
-    function changeOldGamesFontSize(newFontSize) {
-        setOldGamesFontSize(newFontSize)
-        toggleDropdown("fontSize")
-    }
-
-    function changeGameModeFilter(newGameMode) {
-        setGameModeFilter(newGameMode)
-        toggleDropdown("gameModeFilter")
-    }
-
-    function changeDifficultyFilter(newDifficulty) {
-        setDifficultyFilter(newDifficulty)
-        toggleDropdown("difficultyFilter")
-    }
-
-    function changeOutcomeFilter(newOutcome) {
-        setOutcomeFilter(newOutcome)
-        toggleDropdown("outcomeFilter")
     }
 
     function dropdownEvent(name, value, setStateFunction) {
@@ -89,243 +69,245 @@ export default function AllGamesPlayed(props) {
             wastedLeftClicks, wastedRightClicks, wastedChords)
     }
 
-    const fontSizes = [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24]
-
     React.useEffect(() => {
         localStorage.setItem("oldGamesFontSize", oldGamesFontSize)
     }, [oldGamesFontSize])
 
     const changeFontSizeElements = generateDropdownElements("fontSize",
         [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24], oldGamesFontSize, setOldGamesFontSize)
-        // fontSizes.map(fontsize =>
-        // <div key={nanoid()}
-        //     onClick={() => changeOldGamesFontSize(fontsize)}
-        //     style={{backgroundColor: fontsize === oldGamesFontSize ? "lightblue" : "none"}}
-        //     className="dropdown-item">{fontsize}</div>)
 
     const gameModeFilterElements = generateDropdownElements("gameModeFilter", 
         ["All", "Classic", "newGameMode"], gameModeFilter, setGameModeFilter)
-        // ["All", "Classic", "newGameMode"].map(gameMode =>
-        // <div key={nanoid()}
-        // onClick={() => changeGameModeFilter(gameMode)}
-        // style={{backgroundColor: gameMode === gameModeFilter ? "lightblue" : "none"}}
-        // className="dropdown-item">{gameMode}</div>)
 
     const difficultyFilterElements = generateDropdownElements("difficultyFilter", 
         ["All", "Beginner", "Intermediate", "Expert", "Custom"], difficultyFilter, 
         setDifficultyFilter)
-        // ["All", "Beginner", "Intermediate", 
-        // "Expert", "Custom"].map(difficulty =>
-        // <div key={nanoid()}
-        // onClick={() => changeDifficultyFilter(difficulty)}
-        // style={{backgroundColor: difficulty === difficultyFilter ? "lightblue" : "none"}}
-        // className="dropdown-item">{difficulty}</div>)
 
     const sortByElements = generateDropdownElements("sortBy", 
         ["Date", "Time"], sortBy, setSortBy)
-        // ["Date", "Time"].map(sortByThis =>
-        // <div key={nanoid()}
-        // onClick={() => changeGameModeFilter(sortByThis)}
-        // style={{backgroundColor: sortByThis === sortBy ? "lightblue" : "none"}}
-        // className="dropdown-item">{sortByThis}</div>)
 
-    // const outcomeFilterElements = ["All", "Win", "Loss"].map(outcome => 
-    //     <div key={nanoid()}
-    //         onClick={() => changeOutcomeFilter(outcome)}
-    //         style={{backgroundColor: outcome === outcomeFilter ? "lightblue" : "none"}}
-    //         className="dropdown-item">{outcome}</div>)
-
-    // function createBoard(boardData, height, width) {
-    //     const newBoard = []
-    //     let curr = 0
-    //     for (let i = 0; i < height; i++) {
-    //         newBoard.push([])
-    //         for (let j = 0; j < width; j++) {
-    //             newBoard[i].push(boardData[curr])
-    //             curr++
-    //         }
-    //     }
-    //     return newBoard
-    // }
-
-    // function findMines(newBoard) {
-    //     let mines = 0
-    //     for (let i = 0; i < newBoard.length; i++) {
-    //         for (let j = 0; j < newBoard[0].length; j++) {
-    //             if (newBoard[i][j].value === "*") {
-    //                 mines++
-    //             }
-    //         }
-    //     }
-    //     return mines
-    // }
-
-    // function findCorrectFlags(newBoard) {
-    //     if (threeBV === current3BV) {
-    //         return mines
-    //     }
-    //     let correctFlags = 0
-    //     for (let i = 0; i < newBoard.length; i++) {
-    //         for (let j = 0; j < newBoard[0].length; j++) {
-    //             if (newBoard[i][j].isFlagged && newBoard[i][j].value === "*") {
-    //                 correctFlags++
-    //             }
-    //         }
-    //     }
-    //     return correctFlags
-    // }
-
-    // const oldGameResults = gamesResults.map(gameResult => {
-    //     const width = gameResult.width
-    //     const height = gameResult.board.length / gameResult.width
-    //     const newBoard = createBoard(gameResult.board, height, width)
-    //     const mines = findMines(newBoard)
-    //     const threeBV = find3BV(newBoard)
-    //     const current3BV = findCurrent3BV(newBoard)
-    //     const correctFlags = findCorrectFlags(newBoard)
-    //     function createBoard() {
-    //         const newBoard = []
-    //         let curr = 0
-    //         for (let i = 0; i < height; i++) {
-    //             newBoard.push([])
-    //             for (let j = 0; j < width; j++) {
-    //                 newBoard[i].push(gameResult.board[curr])
-    //                 curr++
-    //             }
-    //         }
-    //         return newBoard
-    //     }
+    const oldGameResults = gamesResults && gamesResults.map(gameResult => {
+        const width = gameResult.width
+        const height = gameResult.board.length / gameResult.width
+        const newBoard = createBoard(gameResult.board, height, width)
+        const mines = findMines(newBoard)
+        const threeBV = find3BV(newBoard)
+        const current3BV = findCurrent3BV(newBoard)
+        const gameProgress = current3BV / threeBV
+        const usefulClicks = gameResult.usefulLeftClicks + gameResult.usefulRightClicks + 
+            gameResult.usefulChords
+        const wastedClicks = gameResult.wastedLeftClicks + gameResult.wastedRightClicks + 
+            gameResult.wastedChords
+        const totalClicks = usefulClicks + wastedClicks
+        const threeBVPerSecond = current3BV / gameResult.time
+        const RQP = gameResult.time / threeBVPerSecond
+        const IOS = Math.log(threeBVPerSecond) / Math.log(gameResult.time)
+        const clicksPerSecond = totalClicks / gameResult.time
+        const usefulClicksPerSecond = usefulClicks / gameResult.time
+        const efficiency = current3BV / totalClicks
+        const throughput = current3BV / usefulClicks
+        const correctness = usefulClicks / totalClicks
+        const date = gameResult.date
+        const correctFlags = findCorrectFlags()
+        function createBoard() {
+            const newBoard = []
+            let curr = 0
+            for (let i = 0; i < height; i++) {
+                newBoard.push([])
+                for (let j = 0; j < width; j++) {
+                    newBoard[i].push(gameResult.board[curr])
+                    curr++
+                }
+            }
+            return newBoard
+        }
     
-    //     function findMines() {
-    //         let mines = 0
-    //         for (let i = 0; i < height; i++) {
-    //             for (let j = 0; j < width; j++) {
-    //                 if (newBoard[i][j].value === "*") {
-    //                     mines++
-    //                 }
-    //             }
-    //         }
-    //         return mines
-    //     }
-    
-    //     function findCorrectFlags() {
-    //         if (threeBV === current3BV) {
-    //             return mines
-    //         }
-    //         let correctFlags = 0
-    //         for (let i = 0; i < height; i++) {
-    //             for (let j = 0; j < width; j++) {
-    //                 if (newBoard[i][j].isFlagged && newBoard[i][j].value === "*") {
-    //                     correctFlags++
-    //                 }
-    //             }
-    //         }
-    //         return correctFlags
-    //     }
-    
-    //     function find3BV() {
-    //         const visited = []
-    //         let threeBV = 0
-    //         for (let i = 0; i < height; i++) {
-    //             visited.push([])
-    //             for (let j = 0; j < width; j++) {
-    //                 visited[i].push(false)
-    //             }
-    //         }
-    //         function DFS(row, col) {
-    //             if (row < 0 || row === height || col < 0 || col === width ||
-    //                 visited[row][col]) {
-    //                 return
-    //             }
-    //             visited[row][col] = true
-    //             if (newBoard[row][col].value === 0) {
-    //                 DFS(row - 1, col - 1)
-    //                 DFS(row, col - 1)
-    //                 DFS(row + 1, col - 1)
-    //                 DFS(row - 1, col)
-    //                 DFS(row + 1, col)
-    //                 DFS(row - 1, col + 1)
-    //                 DFS(row, col + 1)
-    //                 DFS(row + 1, col + 1)
-    //             }
-    //         }
-    //         for (let i = 0; i < height; i++) {
-    //             for (let j = 0; j < width; j++) {
-    //                 if (newBoard[i][j].value === 0 && !visited[i][j]) {
-    //                     DFS(i, j)
-    //                     threeBV++
-    //                 }
-    //             }
-    //         }
-    //         for (let i = 0; i < height; i++) {
-    //             for (let j = 0; j < width; j++) {
-    //                 if (!visited[i][j] && newBoard[i][j].value !== "*") {
-    //                     threeBV++
-    //                 }
-    //             }
-    //         }
-    //         return threeBV
-    //     }
-    
-    //     function findCurrent3BV() {
-    //         const visited = []
-    //         let threeBV = 0
-    //         let visitedRevealed = false
-    //         for (let i = 0; i < height; i++) {
-    //             visited.push([])
-    //             for (let j = 0; j < width; j++) {
-    //                 visited[i].push(false)
-    //             }
-    //         }
-    //         function DFS(row, col) {
-    //             if (row < 0 || row === height || col < 0 || col === width ||
-    //                 visited[row][col]) {
-    //                 return
-    //             }
-    //             visited[row][col] = true
-    //             if (newBoard[row][col].isRevealed) {
-    //                 visitedRevealed = true
-    //             }
-    //             if (newBoard[row][col].value === 0) {
-    //                 DFS(row - 1, col - 1)
-    //                 DFS(row, col - 1)
-    //                 DFS(row + 1, col - 1)
-    //                 DFS(row - 1, col)
-    //                 DFS(row + 1, col)
-    //                 DFS(row - 1, col + 1)
-    //                 DFS(row, col + 1)
-    //                 DFS(row + 1, col + 1)
-    //             }
-    //         }
-    //         for (let i = 0; i < height; i++) {
-    //             for (let j = 0; j < width; j++) {
-    //                 if (newBoard[i][j].value === 0 && !visited[i][j]) {
-    //                     visitedRevealed = false
-    //                     DFS(i, j)
-    //                     visitedRevealed && threeBV++
-    //                 }
-    //             }
-    //         }
-    //         for (let i = 0; i < height; i++) {
-    //             for (let j = 0; j < width; j++) {
-    //                 if (!visited[i][j] && newBoard[i][j].value !== "*" && newBoard[i][j].isRevealed) {
-    //                     threeBV++
-    //                 }
-    //             }
-    //         }
-    //         return threeBV
-    //     }
-    //     return {
-    //         outcome: current3BV === threeBV ? "Win" : "Loss",
-    //         height: height,
-    //         width: width,
-    //         mines: mines,
-    // }})
+        function findMines() {
+            let mines = 0
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (newBoard[i][j].value === "*") {
+                        mines++
+                    }
+                }
+            }
+            return mines
+        }
 
-    const oldGameResultElements = gamesResults && gamesResults.map(gameResult => 
+        function findCorrectFlags() {
+            if (threeBV === current3BV) {
+                return mines
+            }
+            let correctFlags = 0
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (newBoard[i][j].isFlagged && newBoard[i][j].value === "*") {
+                        correctFlags++
+                    }
+                }
+            }
+            return correctFlags
+        }
+    
+        function find3BV() {
+            const visited = []
+            let threeBV = 0
+            for (let i = 0; i < height; i++) {
+                visited.push([])
+                for (let j = 0; j < width; j++) {
+                    visited[i].push(false)
+                }
+            }
+            function DFS(row, col) {
+                if (row < 0 || row === height || col < 0 || col === width ||
+                    visited[row][col]) {
+                    return
+                }
+                visited[row][col] = true
+                if (newBoard[row][col].value === 0) {
+                    DFS(row - 1, col - 1)
+                    DFS(row, col - 1)
+                    DFS(row + 1, col - 1)
+                    DFS(row - 1, col)
+                    DFS(row + 1, col)
+                    DFS(row - 1, col + 1)
+                    DFS(row, col + 1)
+                    DFS(row + 1, col + 1)
+                }
+            }
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (newBoard[i][j].value === 0 && !visited[i][j]) {
+                        DFS(i, j)
+                        threeBV++
+                    }
+                }
+            }
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (!visited[i][j] && newBoard[i][j].value !== "*") {
+                        threeBV++
+                    }
+                }
+            }
+            return threeBV
+        }
+    
+        function findCurrent3BV() {
+            const visited = []
+            let threeBV = 0
+            let visitedRevealed = false
+            for (let i = 0; i < height; i++) {
+                visited.push([])
+                for (let j = 0; j < width; j++) {
+                    visited[i].push(false)
+                }
+            }
+            function DFS(row, col) {
+                if (row < 0 || row === height || col < 0 || col === width ||
+                    visited[row][col]) {
+                    return
+                }
+                visited[row][col] = true
+                if (newBoard[row][col].isRevealed) {
+                    visitedRevealed = true
+                }
+                if (newBoard[row][col].value === 0) {
+                    DFS(row - 1, col - 1)
+                    DFS(row, col - 1)
+                    DFS(row + 1, col - 1)
+                    DFS(row - 1, col)
+                    DFS(row + 1, col)
+                    DFS(row - 1, col + 1)
+                    DFS(row, col + 1)
+                    DFS(row + 1, col + 1)
+                }
+            }
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (newBoard[i][j].value === 0 && !visited[i][j]) {
+                        visitedRevealed = false
+                        DFS(i, j)
+                        visitedRevealed && threeBV++
+                    }
+                }
+            }
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    if (!visited[i][j] && newBoard[i][j].value !== "*" && newBoard[i][j].isRevealed) {
+                        threeBV++
+                    }
+                }
+            }
+            return threeBV
+        }
+        return {
+            key: gameResult.id,
+            board: newBoard,
+            outcome: current3BV === threeBV ? "Win" : "Loss",
+            gameMode: gameResult.gameMode,
+            difficulty: gameResult.difficulty,
+            height: height,
+            width: width,
+            mines: mines,
+            time: gameResult.time,
+            estimatedTime: gameResult.time / gameProgress,
+            current3BV: current3BV,
+            threeBV: threeBV,
+            gameProgress: gameProgress,
+            usefulClicks: usefulClicks,
+            usefulLeftClicks: gameResult.usefulLeftClicks,
+            usefulRightClicks: gameResult.usefulRightClicks,
+            usefulChords: gameResult.usefulChords,
+            wastedClicks: wastedClicks,
+            wastedLeftClicks: gameResult.wastedLeftClicks,
+            wastedRightClicks: gameResult.wastedRightClicks,
+            wastedChords: gameResult.wastedChords,
+            threeBVPerSecond: threeBVPerSecond,
+            efficiency: efficiency,
+            RQP: RQP,
+            IOS: IOS,
+            clicksPerSecond: clicksPerSecond,
+            usefulClicksPerSecond: usefulClicksPerSecond,
+            throughput: throughput,
+            correctness: correctness,
+            date: date,
+            correctFlags: correctFlags
+    }})
+
+    const oldGameResultElements = gamesResults && oldGameResults.map(oldGameResult =>
         <OldGameResult 
-            key={gameResult.id}
-            gameResult={gameResult}
+            key={oldGameResult.key}
+            board={oldGameResult.board}
+            outcome={oldGameResult.outcome}
+            gameMode={oldGameResult.gameMode}
+            difficulty={oldGameResult.difficulty}
+            height={oldGameResult.height}
+            width={oldGameResult.width}
+            mines={oldGameResult.mines}
+            time={oldGameResult.time}
+            estimatedTime={oldGameResult.estimatedTime}
+            current3BV={oldGameResult.current3BV}
+            threeBV={oldGameResult.threeBV}
+            gameProgress={oldGameResult.gameProgress}
+            usefulClicks={oldGameResult.usefulClicks}
+            usefulLeftClicks={oldGameResult.usefulLeftClicks}
+            usefulRightClicks={oldGameResult.usefulRightClicks}
+            usefulChords={oldGameResult.usefulChords}
+            wastedClicks={oldGameResult.wastedClicks}
+            wastedLeftClicks={oldGameResult.wastedLeftClicks}
+            wastedRightClicks={oldGameResult.wastedRightClicks}
+            wastedChords={oldGameResult.wastedChords}
+            threeBVPerSecond={oldGameResult.threeBVPerSecond}
+            efficiency={oldGameResult.efficiency}
+            RQP={oldGameResult.RQP}
+            IOS={oldGameResult.IOS}
+            clicksPerSecond={oldGameResult.clicksPerSecond}
+            usefulClicksPerSecond={oldGameResult.usefulClicksPerSecond}
+            throughput={oldGameResult.throughput}
+            correctness={oldGameResult.correctness}
+            date={oldGameResult.date}
+            correctFlags={oldGameResult.correctFlags}
             showMetricsData={showMetricsData}
             retrieveGameData={retrieveGameData}
         />
@@ -398,27 +380,33 @@ export default function AllGamesPlayed(props) {
                 </div> 
             </div>
             <table style={styles}>
-                <th>View</th>
-                <th>Outcome</th>
-                <th>Game Mode</th>
-                <th>Difficulty</th>
-                <th>Board</th>
-                <th>Time</th>
-                <th>Est Time</th>
-                <th>3BV</th>
-                <th>Useful Clicks</th>
-                <th>Wasted Clicks</th>
-                <th>Clicks</th>
-                <th>3BV/s</th>
-                {showMetricsData.showRQP &&<th>RQP</th>}
-                {showMetricsData.showIOS && <th>IOS</th>}
-                {showMetricsData.showClicksPerSecond && <th>CL/s</th>}
-                {showMetricsData.showUsefulClicksPerSecond && <th>UCL/s</th>}
-                <th>Eff</th>
-                {showMetricsData.showThroughput && <th>Thrp</th>}
-                {showMetricsData.showCorrectness && <th>Corr</th>}
-                <th>Date</th>
-                {oldGameResultElements}
+                <thead>
+                    <tr>
+                        <th>View</th>
+                        <th>Outcome</th>
+                        <th>Game Mode</th>
+                        <th>Difficulty</th>
+                        <th>Board</th>
+                        <th>Time</th>
+                        <th>Est Time</th>
+                        <th>3BV</th>
+                        <th>Useful Clicks</th>
+                        <th>Wasted Clicks</th>
+                        <th>Clicks</th>
+                        <th>3BV/s</th>
+                        {showMetricsData.showRQP &&<th>RQP</th>}
+                        {showMetricsData.showIOS && <th>IOS</th>}
+                        {showMetricsData.showClicksPerSecond && <th>CL/s</th>}
+                        {showMetricsData.showUsefulClicksPerSecond && <th>UCL/s</th>}
+                        <th>Eff</th>
+                        {showMetricsData.showThroughput && <th>Thrp</th>}
+                        {showMetricsData.showCorrectness && <th>Corr</th>}
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {oldGameResultElements}
+                </tbody>
             </table>
         </div>
     )

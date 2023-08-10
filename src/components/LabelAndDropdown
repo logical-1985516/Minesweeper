@@ -1,0 +1,17 @@
+import React from "react"
+
+export default function LabelAndDropdown(props) {
+    return (
+        <div style={{marginBottom: "5px"}}>
+            <div className="label-and-dropdown">
+                <span>{props.labelName}: {props.state}</span>
+                <div>
+                    <button onClick={() => props.toggleDropdown("difficultyFilter")}>Select</button>
+                    {showDropdown === "name" && <div className="dropdown-container">
+                        {props.items}
+                    </div>}
+                </div>
+            </div>
+        </div>
+    )
+}
