@@ -1,5 +1,6 @@
 import React from "react"
 import OldGameResult from "./OldGameResult"
+import LabelAndDropdown from "./LabelAndDropdown"
 import { nanoid } from "nanoid"
 import { resultsCollection } from "../firebase"
 import { onSnapshot, query, where, orderBy } from "firebase/firestore"
@@ -53,14 +54,6 @@ export default function AllGamesPlayed(props) {
         toggleDropdown(name)
     }
 
-    function generateDropdownElements(name, values, state, setStateFunction) {
-        return values.map(value =>
-            <div key={nanoid()}
-            onClick={() => dropdownEvent(name, value, setStateFunction)}
-            style={{backgroundColor: value === state ? "lightblue" : "none"}}
-            className="dropdown-item">{value}</div>)
-    }
-
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
@@ -73,18 +66,15 @@ export default function AllGamesPlayed(props) {
         localStorage.setItem("oldGamesFontSize", oldGamesFontSize)
     }, [oldGamesFontSize])
 
-    const changeFontSizeElements = generateDropdownElements("fontSize",
-        [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24], oldGamesFontSize, setOldGamesFontSize)
+    // const changeFontSizeElements = generateDropdownElements("fontSize",
+    //     [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24], oldGamesFontSize, setOldGamesFontSize)
 
-    const gameModeFilterElements = generateDropdownElements("gameModeFilter", 
-        ["All", "Classic", "newGameMode"], gameModeFilter, setGameModeFilter)
+    // const difficultyFilterElements = generateDropdownElements("difficultyFilter", 
+    //     ["All", "Beginner", "Intermediate", "Expert", "Custom"], difficultyFilter, 
+    //     setDifficultyFilter)
 
-    const difficultyFilterElements = generateDropdownElements("difficultyFilter", 
-        ["All", "Beginner", "Intermediate", "Expert", "Custom"], difficultyFilter, 
-        setDifficultyFilter)
-
-    const sortByElements = generateDropdownElements("sortBy", 
-        ["Date", "Time"], sortBy, setSortBy)
+    // const sortByElements = generateDropdownElements("sortBy", 
+    //     ["Date", "Time"], sortBy, setSortBy)
 
     const oldGameResults = gamesResults && gamesResults.map(gameResult => {
         const width = gameResult.width
@@ -319,7 +309,17 @@ export default function AllGamesPlayed(props) {
 
     return (
         <div>
-            <div style={{marginBottom: "10px"}}>
+            <LabelAndDropdown
+                dropdownEvent={dropdownEvent}
+                labelName="Font Size"
+                state={oldGamesFontSize}
+                toggleDropdown={toggleDropdown}
+                dropdownName={"fontSize"}
+                showDropdown={showDropdown}
+                items={[10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24]}
+                setStateFunction={setOldGamesFontSize}
+            />
+            {/* <div style={{marginBottom: "10px"}}>
                 <div className="label-and-dropdown">
                     <span>Font Size: {oldGamesFontSize}</span>
                     <div>
@@ -329,10 +329,10 @@ export default function AllGamesPlayed(props) {
                         </div>}
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div>
                 <div>
-                    <div style={{marginBottom: "10px", textDecoration: "underline"}}>Filters</div>
+                    <div style={{marginBottom: "5px", textDecoration: "underline"}}>Filters</div>
                     {/* <div style={{marginBottom: "5px"}}>
                         <div className="label-and-dropdown">
                             <span>Outcome: {outcomeFilter}</span>
@@ -344,7 +344,27 @@ export default function AllGamesPlayed(props) {
                             </div>
                         </div>
                     </div> */}
-                    <div style={{marginBottom: "5px"}}>
+                    <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="Game Mode"
+                        state={gameModeFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"gameModeFilter"}
+                        showDropdown={showDropdown}
+                        items={["All", "Classic", "newGameMode"]}
+                        setStateFunction={setGameModeFilter}
+                    />
+                    <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="Difficulty"
+                        state={difficultyFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"difficultyFilter"}
+                        showDropdown={showDropdown}
+                        items={["All", "Beginner", "Intermediate", "Expert", "Custom"]}
+                        setStateFunction={setDifficultyFilter}
+                    />
+                    {/* <div style={{marginBottom: "5px"}}>
                         <div className="label-and-dropdown">
                             <span>Game Mode: {gameModeFilter}</span>
                             <div>
@@ -354,8 +374,8 @@ export default function AllGamesPlayed(props) {
                                 </div>}
                             </div>
                         </div>
-                    </div>
-                    <div style={{marginBottom: "5px"}}>
+                    </div> */}
+                    {/* <div style={{marginBottom: "5px"}}>
                         <div className="label-and-dropdown">
                             <span>Difficulty: {difficultyFilter}</span>
                             <div>
@@ -365,9 +385,19 @@ export default function AllGamesPlayed(props) {
                                 </div>}
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
-                <div style={{marginBottom: "5px"}}>
+                <LabelAndDropdown
+                    dropdownEvent={dropdownEvent}
+                    labelName="Sort By"
+                    state={sortBy}
+                    toggleDropdown={toggleDropdown}
+                    dropdownName={"sortBy"}
+                    showDropdown={showDropdown}
+                    items={["Date", "Time"]}
+                    setStateFunction={setSortBy}
+                />
+                {/* <div style={{marginBottom: "5px"}}>
                     <div className="label-and-dropdown">
                         <span>Sort By: {sortBy}</span>
                         <div>
@@ -377,7 +407,7 @@ export default function AllGamesPlayed(props) {
                             </div>}
                         </div>
                     </div>
-                </div> 
+                </div>  */}
             </div>
             <table style={styles}>
                 <thead>
