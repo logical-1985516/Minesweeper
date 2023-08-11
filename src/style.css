@@ -105,14 +105,6 @@ body {
     gap: 5px;
 }
 
-/* .settings--button {
-    background-color: blueviolet;
-    color: white;
-    border: none;
-    padding: 5px;
-    border-radius: 5px;
-} */
-
 .dropdown-item {
     display: flex;
     justify-content: center;

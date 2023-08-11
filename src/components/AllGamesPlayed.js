@@ -14,9 +14,6 @@ export default function AllGamesPlayed(props) {
     const [outcomeFilter, setOutcomeFilter] = React.useState("All")
     const [gameModeFilter, setGameModeFilter] = React.useState("All")
     const [difficultyFilter, setDifficultyFilter] = React.useState("All")
-    const [heightFilter, setHeightFilter] = React.useState("")
-    const [widthFilter, setWidthFilter] = React.useState("")
-    const [minesFilter, setMinesFilter] = React.useState("")
     const [sortBy, setSortBy] = React.useState("Date")
     const [boardFilter, setBoardFilter] = React.useState({
         height: "All",
@@ -28,10 +25,6 @@ export default function AllGamesPlayed(props) {
         width: "",
         mines: ""
     })
-    //const [gameModes, setGameModes] = React.useState("")
-    // const q = outcomeFilter === "All" 
-    //     ? resultsCollection
-    //     : query(resultsCollection, where("outcome", "==", outcomeFilter))
 
     const filterByGameMode = gameModeFilter === "All"
         ? resultsCollection
@@ -91,16 +84,6 @@ export default function AllGamesPlayed(props) {
     React.useEffect(() => {
         localStorage.setItem("oldGamesFontSize", oldGamesFontSize)
     }, [oldGamesFontSize])
-
-    // const changeFontSizeElements = generateDropdownElements("fontSize",
-    //     [10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24], oldGamesFontSize, setOldGamesFontSize)
-
-    // const difficultyFilterElements = generateDropdownElements("difficultyFilter", 
-    //     ["All", "Beginner", "Intermediate", "Expert", "Custom"], difficultyFilter, 
-    //     setDifficultyFilter)
-
-    // const sortByElements = generateDropdownElements("sortBy", 
-    //     ["Date", "Time"], sortBy, setSortBy)
 
     function sortFunction(metric) {
         const fieldName = metric === "Estimated Time"
@@ -310,7 +293,7 @@ export default function AllGamesPlayed(props) {
         boardFilter.width === "All" || oldGameResult.width === boardFilter.width)
     const filterByMines = gamesResults && filterByWidth.filter(oldGameResult =>
         boardFilter.mines === "All" || oldGameResult.mines === boardFilter.mines)
-    const sortedFilterByMines = gamesResults && filterByMines.sort(sortFunction(sortBy))
+    gamesResults && filterByMines.sort(sortFunction(sortBy))
 
     const oldGameResultElements = gamesResults && filterByMines.map(oldGameResult =>
         <OldGameResult 
@@ -365,18 +348,7 @@ export default function AllGamesPlayed(props) {
                 showDropdown={showDropdown}
                 items={[10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24]}
                 setStateFunction={setOldGamesFontSize}
-            />
-            {/* <div style={{marginBottom: "10px"}}>
-                <div className="label-and-dropdown">
-                    <span>Font Size: {oldGamesFontSize}</span>
-                    <div>
-                        <button onClick={() => toggleDropdown("fontSize")}>Select</button>
-                        {showDropdown === "fontSize" && <div className="dropdown-container">
-                            {changeFontSizeElements}
-                        </div>}
-                    </div>
-                </div>
-            </div> */}
+            /> 
             <div>
                 <div>
                     <div style={{marginBottom: "5px", textDecoration: "underline"}}>Filters</div>
@@ -390,17 +362,6 @@ export default function AllGamesPlayed(props) {
                         items={["All", "Win", "Loss"]}
                         setStateFunction={setOutcomeFilter}
                     />
-                    {/* <div style={{marginBottom: "5px"}}>
-                        <div className="label-and-dropdown">
-                            <span>Outcome: {outcomeFilter}</span>
-                            <div>
-                                <button onClick={() => toggleDropdown("outcomeFilter")}>Select</button>
-                                {showDropdown === "outcomeFilter" && <div className="dropdown-container">
-                                    {outcomeFilterElements}
-                                </div>}
-                            </div>
-                        </div>
-                    </div> */}
                     <LabelAndDropdown
                         dropdownEvent={dropdownEvent}
                         labelName="Game Mode"
@@ -421,36 +382,6 @@ export default function AllGamesPlayed(props) {
                         items={["All", "Beginner", "Intermediate", "Expert", "Custom"]}
                         setStateFunction={setDifficultyFilter}
                     />
-                    {/* <LabelAndDropdown
-                        dropdownEvent={dropdownEvent}
-                        labelName="Height"
-                        state={heightFilter}
-                        toggleDropdown={toggleDropdown}
-                        dropdownName={"heightFilter"}
-                        showDropdown={showDropdown}
-                        items={heightWidthArray()}
-                        setStateFunction={setHeightFilter}
-                    />
-                    <LabelAndDropdown
-                        dropdownEvent={dropdownEvent}
-                        labelName="Width"
-                        state={widthFilter}
-                        toggleDropdown={toggleDropdown}
-                        dropdownName={"widthFilter"}
-                        showDropdown={showDropdown}
-                        items={heightWidthArray()}
-                        setStateFunction={setWidthFilter}
-                    />
-                    <LabelAndDropdown
-                        dropdownEvent={dropdownEvent}
-                        labelName="Mines"
-                        state={minesFilter}
-                        toggleDropdown={toggleDropdown}
-                        dropdownName={"minesFilter"}
-                        showDropdown={showDropdown}
-                        items={["All", "Beginner", "Intermediate", "Expert", "Custom"]}
-                        setStateFunction={setMinesFilter}
-                    /> */}
                     <form onSubmit={handleSubmit} style={{marginBottom: "5px"}}>
                         <label htmlFor="height">Height: {boardFilter.height}</label>
                         <input 
@@ -497,28 +428,6 @@ export default function AllGamesPlayed(props) {
                         <button>Update</button>
                         <span style={{marginLeft: "10px"}}>Note: leave fields blank to set to "All"</span>
                     </form>
-                    {/* <div style={{marginBottom: "5px"}}>
-                        <div className="label-and-dropdown">
-                            <span>Game Mode: {gameModeFilter}</span>
-                            <div>
-                                <button onClick={() => toggleDropdown("gameModeFilter")}>Select</button>
-                                {showDropdown === "gameModeFilter" && <div className="dropdown-container">
-                                    {gameModeFilterElements}
-                                </div>}
-                            </div>
-                        </div>
-                    </div> */}
-                    {/* <div style={{marginBottom: "5px"}}>
-                        <div className="label-and-dropdown">
-                            <span>Difficulty: {difficultyFilter}</span>
-                            <div>
-                                <button onClick={() => toggleDropdown("difficultyFilter")}>Select</button>
-                                {showDropdown === "difficultyFilter" && <div className="dropdown-container">
-                                    {difficultyFilterElements}
-                                </div>}
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
                 <LabelAndDropdown
                     dropdownEvent={dropdownEvent}
@@ -530,17 +439,6 @@ export default function AllGamesPlayed(props) {
                     items={["Date", "Time", "Estimated Time", "3BV/s", "Efficiency"]}
                     setStateFunction={setSortBy}
                 />
-                {/* <div style={{marginBottom: "5px"}}>
-                    <div className="label-and-dropdown">
-                        <span>Sort By: {sortBy}</span>
-                        <div>
-                            <button onClick={() => toggleDropdown("sortBy")}>Select</button>
-                            {showDropdown === "sortBy" && <div className="dropdown-container">
-                                {sortByElements}    
-                            </div>}
-                        </div>
-                    </div>
-                </div>  */}
             </div>
             <table style={styles}>
                 <thead>

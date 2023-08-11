@@ -22,7 +22,6 @@ export default function Tile(props) {
             : "lightgrey",
         height: props.tileSize,
         width: props.tileSize,
-        fontSize: `${props.tileSize * 2 / 3}px`,
         border: `${props.tileSize / 15}px solid black`,
         fontSize: `${props.tileSize * props.numberSize}px`
     }

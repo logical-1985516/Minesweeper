@@ -161,18 +161,6 @@ export default function Settings(props) {
                     </div>
                 </div>
             </div>
-            {/* <form>
-                <label htmlFor="tileSize">Tile Size: </label>
-                <input
-                    id="tileSize"
-                    name="tileSize"
-                    type="number"
-                    onChange={changeTileSize}
-                    min={10}
-                    max={40}
-                    step={1}
-                />
-            </form> */}
         </div>
     )
 }

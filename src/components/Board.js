@@ -23,7 +23,7 @@ export default function Board(props) {
     />))
 
     /**
-     * For some reason, the border width rendered is rounded down to the 
+     * Due to probably browser rendering, the border width rendered is rounded down to the 
      * nearest 0.8 px, unless it is less than 0.8 px. The border size specified
      * is props.tileSize / 15, which is then rounded to the nearest 0.8 px. We
      * add 0.0001 to account for floating point, so that whole numbers using
@@ -42,8 +42,6 @@ export default function Board(props) {
             2 * actualBorderSize}px`,
         border: `${props.tileSize / 15}px solid black`
     }
-
-    console.log(props.tileSize / 20)
 
     return (
         <main className="board--container">

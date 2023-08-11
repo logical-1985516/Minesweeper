@@ -426,74 +426,6 @@ export default function GameBoard(props) {
         }
     }
 
-    function findCurrent3BV() {
-        const visited = []
-        let threeBV = 0
-        let visitedRevealed = false
-        for (let i = 0; i < height; i++) {
-            visited.push([])
-            for (let j = 0; j < width; j++) {
-                visited[i].push(false)
-            }
-        }
-        function DFS(row, col) {
-            if (row < 0 || row === height || col < 0 || col === width ||
-                visited[row][col]) {
-                return
-            }
-            visited[row][col] = true
-            if (board[row][col].isRevealed) {
-                visitedRevealed = true
-            }
-            if (board[row][col].value === 0) {
-                DFS(row - 1, col - 1)
-                DFS(row, col - 1)
-                DFS(row + 1, col - 1)
-                DFS(row - 1, col)
-                DFS(row + 1, col)
-                DFS(row - 1, col + 1)
-                DFS(row, col + 1)
-                DFS(row + 1, col + 1)
-            }
-        }
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                if (board[i][j].value === 0 && !visited[i][j]) {
-                    visitedRevealed = false
-                    DFS(i, j)
-                    visitedRevealed && threeBV++
-                }
-            }
-        }
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                if (!visited[i][j] && board[i][j].value !== "*" && board[i][j].isRevealed) {
-                    threeBV++
-                }
-            }
-        }
-        return threeBV
-    }
-
-    /**
-     * Autoreveals: 
-     * 1. unrevealed numbers
-     * 2. unflagged and unrevealed mines
-     * 3. wrongly flagged tiles
-     */
-    function loseGame() {
-        setEndTime(Date.now())
-        setGameStatus("lose") // tiles would be autorevealed. See Tile component.
-        setCurrent3BV(findCurrent3BV())
-    }
-
-    function winGame() {
-        setEndTime(Date.now())
-        setGameStatus("win") // tiles would be autorevealed. See Tile component.
-        setMinesLeft(0)
-        setCurrent3BV(threeBV)
-    }
-
     function resetBoard() {
         setGameStatus("")
         setBoard(generateTiles())
@@ -571,6 +503,66 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         if (finished1stClick && board.some(row => row.some(tile => tile.value === "*" && tile.isRevealed))) {
             if (gameStatus === "onGoing") {
+                function findCurrent3BV() {
+                    const visited = []
+                    let threeBV = 0
+                    let visitedRevealed = false
+                    for (let i = 0; i < height; i++) {
+                        visited.push([])
+                        for (let j = 0; j < width; j++) {
+                            visited[i].push(false)
+                        }
+                    }
+                    function DFS(row, col) {
+                        if (row < 0 || row === height || col < 0 || col === width ||
+                            visited[row][col]) {
+                            return
+                        }
+                        visited[row][col] = true
+                        if (board[row][col].isRevealed) {
+                            visitedRevealed = true
+                        }
+                        if (board[row][col].value === 0) {
+                            DFS(row - 1, col - 1)
+                            DFS(row, col - 1)
+                            DFS(row + 1, col - 1)
+                            DFS(row - 1, col)
+                            DFS(row + 1, col)
+                            DFS(row - 1, col + 1)
+                            DFS(row, col + 1)
+                            DFS(row + 1, col + 1)
+                        }
+                    }
+                    for (let i = 0; i < height; i++) {
+                        for (let j = 0; j < width; j++) {
+                            if (board[i][j].value === 0 && !visited[i][j]) {
+                                visitedRevealed = false
+                                DFS(i, j)
+                                visitedRevealed && threeBV++
+                            }
+                        }
+                    }
+                    for (let i = 0; i < height; i++) {
+                        for (let j = 0; j < width; j++) {
+                            if (!visited[i][j] && board[i][j].value !== "*" && board[i][j].isRevealed) {
+                                threeBV++
+                            }
+                        }
+                    }
+                    return threeBV
+                }
+
+                /**
+                 * Autoreveals: 
+                 * 1. unrevealed numbers
+                 * 2. unflagged and unrevealed mines
+                 * 3. wrongly flagged tiles
+                 */
+                function loseGame() {
+                    setEndTime(Date.now())
+                    setGameStatus("lose") // tiles would be autorevealed. See Tile component.
+                    setCurrent3BV(findCurrent3BV())
+                }
                 loseGame()
             }
         }
@@ -583,6 +575,12 @@ export default function GameBoard(props) {
     React.useEffect(() => {
         if (gameStatus === "onGoing" && board.every(row => 
             row.every(tile => tile.value === "*" || tile.isRevealed))) {
+            function winGame() {
+                setEndTime(Date.now())
+                setGameStatus("win") // tiles would be autorevealed. See Tile component.
+                setMinesLeft(0)
+                setCurrent3BV(threeBV)
+            }
             winGame()
         }
     }, [board])
