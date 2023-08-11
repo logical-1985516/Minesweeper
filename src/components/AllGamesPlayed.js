@@ -14,7 +14,20 @@ export default function AllGamesPlayed(props) {
     const [outcomeFilter, setOutcomeFilter] = React.useState("All")
     const [gameModeFilter, setGameModeFilter] = React.useState("All")
     const [difficultyFilter, setDifficultyFilter] = React.useState("All")
+    const [heightFilter, setHeightFilter] = React.useState("")
+    const [widthFilter, setWidthFilter] = React.useState("")
+    const [minesFilter, setMinesFilter] = React.useState("")
     const [sortBy, setSortBy] = React.useState("Date")
+    const [boardFilter, setBoardFilter] = React.useState({
+        height: "All",
+        width: "All",
+        mines: "All"
+    })
+    const [newBoardFilter, setNewBoardFilter] = React.useState({
+        height: "",
+        width: "",
+        mines: ""
+    })
     //const [gameModes, setGameModes] = React.useState("")
     // const q = outcomeFilter === "All" 
     //     ? resultsCollection
@@ -53,6 +66,20 @@ export default function AllGamesPlayed(props) {
         toggleDropdown(name)
     }
 
+    function handleChange(event) {
+        const {name, value} = event.target
+        setNewBoardFilter(oldNewBoardFilter => ({...oldNewBoardFilter, [name]: value}))
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault()
+        setBoardFilter({
+            height: newBoardFilter.height ? Number(newBoardFilter.height) : "All",
+            width: newBoardFilter.width ? Number(newBoardFilter.width) : "All",
+            mines: newBoardFilter.mines ? Number(newBoardFilter.mines) : "All"
+        })
+    }
+
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
         wastedRightClicks, wastedChords) {
@@ -74,6 +101,14 @@ export default function AllGamesPlayed(props) {
 
     // const sortByElements = generateDropdownElements("sortBy", 
     //     ["Date", "Time"], sortBy, setSortBy)
+
+    function heightWidthArray() {
+        const result = ["All"]
+        for (let i = 0; i < 30; i++) {
+            result.push(i + 1)
+        }
+        return result
+    }
 
     const oldGameResults = gamesResults && gamesResults.map(gameResult => {
         const width = gameResult.width
@@ -266,8 +301,14 @@ export default function AllGamesPlayed(props) {
 
     const filterByOutcome = gamesResults && oldGameResults.filter(oldGameResult => 
         outcomeFilter === "All" || oldGameResult.outcome === outcomeFilter)
+    const filterByHeight = gamesResults && filterByOutcome.filter(oldGameResult =>
+        boardFilter.height === "All" || oldGameResult.height === boardFilter.height)
+    const filterByWidth = gamesResults && filterByHeight.filter(oldGameResult =>
+        boardFilter.width === "All" || oldGameResult.width === boardFilter.width)
+    const filterByMines = gamesResults && filterByWidth.filter(oldGameResult =>
+        boardFilter.mines === "All" || oldGameResult.mines === boardFilter.mines)
 
-    const oldGameResultElements = gamesResults && filterByOutcome.map(oldGameResult =>
+    const oldGameResultElements = gamesResults && filterByMines.map(oldGameResult =>
         <OldGameResult 
             key={oldGameResult.key}
             board={oldGameResult.board}
@@ -376,6 +417,81 @@ export default function AllGamesPlayed(props) {
                         items={["All", "Beginner", "Intermediate", "Expert", "Custom"]}
                         setStateFunction={setDifficultyFilter}
                     />
+                    {/* <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="Height"
+                        state={heightFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"heightFilter"}
+                        showDropdown={showDropdown}
+                        items={heightWidthArray()}
+                        setStateFunction={setHeightFilter}
+                    />
+                    <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="Width"
+                        state={widthFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"widthFilter"}
+                        showDropdown={showDropdown}
+                        items={heightWidthArray()}
+                        setStateFunction={setWidthFilter}
+                    />
+                    <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="Mines"
+                        state={minesFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"minesFilter"}
+                        showDropdown={showDropdown}
+                        items={["All", "Beginner", "Intermediate", "Expert", "Custom"]}
+                        setStateFunction={setMinesFilter}
+                    /> */}
+                    <form onSubmit={handleSubmit} style={{marginBottom: "5px"}}>
+                        <label htmlFor="height">Height: {boardFilter.height}</label>
+                        <input 
+                            id="height"
+                            name="height"
+                            type="number"
+                            value={newBoardFilter.height}
+                            onChange={handleChange}
+                            min={1}
+                            max={30}
+                            step={1}
+                            className="changeBoard--input"
+                        />
+                        <label htmlFor="width">Width: {boardFilter.width}</label>
+                        <input 
+                            id="width"
+                            name="width"
+                            type="number"
+                            value={newBoardFilter.width}
+                            onChange={handleChange}
+                            min={1}
+                            max={30}
+                            step={1}
+                            className="changeBoard--input"
+                        />
+                        <label htmlFor="mines">Mines: {boardFilter.mines}</label>
+                        <input 
+                            id="mines"
+                            name="mines"
+                            type="number"
+                            value={newBoardFilter.mines}
+                            onChange={handleChange}
+                            min={1}
+                            max={newBoardFilter.height !== "All" && newBoardFilter !== "All"
+                                    ? newBoardFilter.height * newBoardFilter.width - 1
+                                    : newBoardFilter.height !== "All"
+                                    ? newBoardFilter.width * 30 - 1
+                                    : newBoardFilter.width !== "All"
+                                    ? newBoardFilter.height * 30 - 1
+                                    : 899}
+                            step={1}
+                            className="changeBoard--input"
+                        />
+                        <button>Update</button>
+                    </form>
                     {/* <div style={{marginBottom: "5px"}}>
                         <div className="label-and-dropdown">
                             <span>Game Mode: {gameModeFilter}</span>
