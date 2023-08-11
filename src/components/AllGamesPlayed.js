@@ -102,12 +102,15 @@ export default function AllGamesPlayed(props) {
     // const sortByElements = generateDropdownElements("sortBy", 
     //     ["Date", "Time"], sortBy, setSortBy)
 
-    function heightWidthArray() {
-        const result = ["All"]
-        for (let i = 0; i < 30; i++) {
-            result.push(i + 1)
-        }
-        return result
+    function sortFunction(metric) {
+        const fieldName = metric === "Estimated Time"
+            ? "estimatedTime"
+            : metric === "3BV/s"
+            ? "threeBVPerSecond"
+            : "efficiency"
+        return ["estimatedTime"].includes(fieldName)
+            ? (object1, object2) => object1[fieldName] - object2[fieldName]
+            : (object1, object2) => object2[fieldName] - object1[fieldName]
     }
 
     const oldGameResults = gamesResults && gamesResults.map(gameResult => {
@@ -307,6 +310,7 @@ export default function AllGamesPlayed(props) {
         boardFilter.width === "All" || oldGameResult.width === boardFilter.width)
     const filterByMines = gamesResults && filterByWidth.filter(oldGameResult =>
         boardFilter.mines === "All" || oldGameResult.mines === boardFilter.mines)
+    const sortedFilterByMines = gamesResults && filterByMines.sort(sortFunction(sortBy))
 
     const oldGameResultElements = gamesResults && filterByMines.map(oldGameResult =>
         <OldGameResult 
@@ -354,7 +358,7 @@ export default function AllGamesPlayed(props) {
         <div>
             <LabelAndDropdown
                 dropdownEvent={dropdownEvent}
-                labelName="Font Size"
+                labelName="Table Font Size"
                 state={oldGamesFontSize}
                 toggleDropdown={toggleDropdown}
                 dropdownName={"fontSize"}
@@ -491,6 +495,7 @@ export default function AllGamesPlayed(props) {
                             className="changeBoard--input"
                         />
                         <button>Update</button>
+                        <span style={{marginLeft: "10px"}}>Note: leave fields blank to set to "All"</span>
                     </form>
                     {/* <div style={{marginBottom: "5px"}}>
                         <div className="label-and-dropdown">
@@ -522,7 +527,7 @@ export default function AllGamesPlayed(props) {
                     toggleDropdown={toggleDropdown}
                     dropdownName={"sortBy"}
                     showDropdown={showDropdown}
-                    items={["Date", "Time"]}
+                    items={["Date", "Time", "Estimated Time", "3BV/s", "Efficiency"]}
                     setStateFunction={setSortBy}
                 />
                 {/* <div style={{marginBottom: "5px"}}>
