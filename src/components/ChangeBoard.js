@@ -126,6 +126,8 @@ export default function ChangeBoard(props) {
                     max={30}
                     step={1}
                     className="changeBoard--input"
+                    disabled = {boardProperties.difficulty !== "Custom"}
+                    required
                 />
                 <label htmlFor="width">Width</label>
                 <input
@@ -138,6 +140,8 @@ export default function ChangeBoard(props) {
                     max={30}
                     step={1}
                     className="changeBoard--input"
+                    disabled = {boardProperties.difficulty !== "Custom"}
+                    required
                 />
                 <label htmlFor="initialMines">Mines</label>
                 <input 
@@ -150,6 +154,8 @@ export default function ChangeBoard(props) {
                     max={boardProperties.height * boardProperties.width - 1}
                     step={1}
                     className="changeBoard--input"
+                    disabled = {boardProperties.difficulty !== "Custom"}
+                    required
                 />
                 <br />
                 <button className="changeBoard--button">Confirm</button>
