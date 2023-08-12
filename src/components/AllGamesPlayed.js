@@ -415,12 +415,12 @@ export default function AllGamesPlayed(props) {
                             value={newBoardFilter.mines}
                             onChange={handleChange}
                             min={1}
-                            max={newBoardFilter.height !== "All" && newBoardFilter !== "All"
+                            max={newBoardFilter.height && newBoardFilter
                                     ? newBoardFilter.height * newBoardFilter.width - 1
-                                    : newBoardFilter.height !== "All"
-                                    ? newBoardFilter.width * 30 - 1
-                                    : newBoardFilter.width !== "All"
+                                    : newBoardFilter.height
                                     ? newBoardFilter.height * 30 - 1
+                                    : newBoardFilter.width
+                                    ? newBoardFilter.width * 30 - 1
                                     : 899}
                             step={1}
                             className="changeBoard--input"
