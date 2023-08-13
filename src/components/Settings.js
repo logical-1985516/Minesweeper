@@ -93,7 +93,7 @@ export default function Settings(props) {
                     checked={formData.showRQP}
                     onChange={handleChange}
                 />
-                <label htmlFor="showRQP">RQP</label>
+                <label htmlFor="showRQP" style={{marginRight: "7px"}}>RQP</label>
                 <input 
                     id="showIOS"
                     name="showIOS"
@@ -101,7 +101,7 @@ export default function Settings(props) {
                     checked={formData.showIOS}
                     onChange={handleChange}
                 />
-                <label htmlFor="showIOS">IOS</label>
+                <label htmlFor="showIOS" style={{marginRight: "7px"}}>IOS</label>
                 <input 
                     id="showClicksPerSecond"
                     name="showClicksPerSecond"
@@ -109,7 +109,7 @@ export default function Settings(props) {
                     checked={formData.showClicksPerSecond}
                     onChange={handleChange}
                 />
-                <label htmlFor="showClicksPerSecond">CL/s</label>
+                <label htmlFor="showClicksPerSecond" style={{marginRight: "7px"}}>CL/s</label>
                 <input 
                     id="showUsefulClicksPerSecond"
                     name="showUsefulClicksPerSecond"
@@ -117,7 +117,8 @@ export default function Settings(props) {
                     checked={formData.showUsefulClicksPerSecond}
                     onChange={handleChange}
                 />
-                <label htmlFor="showUsefulClicksPerSecond">UCL/s</label>
+                <label htmlFor="showUsefulClicksPerSecond" style={{marginRight: "7px"}}>
+                    UCL/s</label>
                 <input 
                     id="showThroughput"
                     name="showThroughput"
@@ -125,7 +126,7 @@ export default function Settings(props) {
                     checked={formData.showThroughput}
                     onChange={handleChange}
                 />
-                <label htmlFor="showThroughput">Throughput</label>
+                <label htmlFor="showThroughput" style={{marginRight: "7px"}}>Throughput</label>
                 <input 
                     id="showCorrectness"
                     name="showCorrectness"

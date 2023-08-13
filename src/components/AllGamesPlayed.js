@@ -6,6 +6,7 @@ import { onSnapshot, query, where, orderBy } from "firebase/firestore"
 
 export default function AllGamesPlayed(props) {
     const showMetricsData = props.showMetricsData
+    const advancedMetrics = generateAdvancedMetrics()
     const [gamesResults, setGamesResults] = React.useState("")
     const [oldGamesFontSize, setOldGamesFontSize] = React.useState(
         JSON.parse(localStorage.getItem("oldGamesFontSize")) || 16
@@ -48,6 +49,17 @@ export default function AllGamesPlayed(props) {
         return unsubscribe
     }, [gameModeFilter, difficultyFilter, sortBy])
 
+    function generateAdvancedMetrics() {
+        const result = []
+        showMetricsData.showRQP && result.push("RQP")
+        showMetricsData.showIOS && result.push("IOS")
+        showMetricsData.showClicksPerSecond && result.push("Clicks/s")
+        showMetricsData.showUsefulClicksPerSecond && result.push("Useful Clicks/s")
+        showMetricsData.showThroughput && result.push("Throughput")
+        showMetricsData.showCorrectness && result.push("Correctness")
+        return result
+    }
+
     function toggleDropdown(name) {
         showDropdown === name
             ? setShowDropdown("")
@@ -86,11 +98,38 @@ export default function AllGamesPlayed(props) {
     }, [oldGamesFontSize])
 
     function sortFunction(metric) {
+        if (!gamesResults || sortBy === "Date" || sortBy === "Time") {
+            return
+        }
         const fieldName = metric === "Estimated Time"
             ? "estimatedTime"
             : metric === "3BV/s"
             ? "threeBVPerSecond"
-            : "efficiency"
+            : metric === "Efficiency"
+            ? "efficiency"
+            : metric === "RQP"
+            ? "RQP"
+            : metric === "IOS"
+            ? "IOS"
+            : metric === "Clicks/s"
+            ? "clicksPerSecond"
+            : metric === "Useful Clicks/s"
+            ? "usefulClicksPerSecond"
+            : metric === "Throughput"
+            ? "throughput"
+            : metric === "Correctness"
+            ? "correctness"
+            : metric === "Total 3BV"
+            ? "threeBV"
+            : metric === "Current 3BV"
+            ? "current3BV"
+            : metric === "Game Progress"
+            ? "gameProgress"
+            : metric === "Clicks"
+            ? "clicks"
+            : metric === "Useful Clicks"
+            ? "usefulClicks"
+            : "wastedClicks"
         return ["estimatedTime"].includes(fieldName)
             ? (object1, object2) => object1[fieldName] - object2[fieldName]
             : (object1, object2) => object2[fieldName] - object1[fieldName]
@@ -265,6 +304,7 @@ export default function AllGamesPlayed(props) {
             current3BV: current3BV,
             threeBV: threeBV,
             gameProgress: gameProgress,
+            clicks: totalClicks,
             usefulClicks: usefulClicks,
             usefulLeftClicks: gameResult.usefulLeftClicks,
             usefulRightClicks: gameResult.usefulRightClicks,
@@ -291,9 +331,11 @@ export default function AllGamesPlayed(props) {
         boardFilter.height === "All" || oldGameResult.height === boardFilter.height)
     const filterByWidth = gamesResults && filterByHeight.filter(oldGameResult =>
         boardFilter.width === "All" || oldGameResult.width === boardFilter.width)
+    console.log(filterByWidth)
     const filterByMines = gamesResults && filterByWidth.filter(oldGameResult =>
         boardFilter.mines === "All" || oldGameResult.mines === boardFilter.mines)
-    gamesResults && filterByMines.sort(sortFunction(sortBy))
+        .sort(sortFunction(sortBy))
+    // (gamesResults && sortBy !== "Date" && sortBy !== "Time") && filterByMines.sort(sortFunction(sortBy))
 
     const oldGameResultElements = gamesResults && filterByMines.map(oldGameResult =>
         <OldGameResult 
@@ -369,7 +411,7 @@ export default function AllGamesPlayed(props) {
                         toggleDropdown={toggleDropdown}
                         dropdownName={"gameModeFilter"}
                         showDropdown={showDropdown}
-                        items={["All", "Classic", "newGameMode"]}
+                        items={["All", "Classic", "To be added"]}
                         setStateFunction={setGameModeFilter}
                     />
                     <LabelAndDropdown
@@ -415,7 +457,7 @@ export default function AllGamesPlayed(props) {
                             value={newBoardFilter.mines}
                             onChange={handleChange}
                             min={1}
-                            max={newBoardFilter.height && newBoardFilter
+                            max={newBoardFilter.height && newBoardFilter.width
                                     ? newBoardFilter.height * newBoardFilter.width - 1
                                     : newBoardFilter.height
                                     ? newBoardFilter.height * 30 - 1
@@ -436,7 +478,10 @@ export default function AllGamesPlayed(props) {
                     toggleDropdown={toggleDropdown}
                     dropdownName={"sortBy"}
                     showDropdown={showDropdown}
-                    items={["Date", "Time", "Estimated Time", "3BV/s", "Efficiency"]}
+                    items={(["Date", "Time", "Estimated Time", "3BV/s", "Efficiency"]
+                        .concat(advancedMetrics))
+                        .concat(["Total 3BV", "Current 3BV", "Game Progress", "Clicks", 
+                        "Useful Clicks", "Wasted Clicks"])}
                     setStateFunction={setSortBy}
                 />
             </div>

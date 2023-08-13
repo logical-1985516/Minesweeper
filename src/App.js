@@ -77,22 +77,24 @@ export default function App() {
 
     return (
         <div className="app--container">
-            <Navbar 
-                changeBoardProperties={changeBoardProperties}
-                boardProperties={boardProperties}
-                changeShowMetricsData={changeShowMetricsData}
-                showMetricsData={showMetricsData}
-                changeTileSize={changeTileSize}
-                changeNumberSize={changeNumberSize}
-                retrieveGameData={retrieveGameData}
-            />
-            <GameBoard 
-                boardProperties={boardProperties}
-                showMetricsData={showMetricsData}
-                tileSize={tileSize}
-                numberSize={numberSize}
-                oldGameData={oldGameData}
-            />
+            <div className="app--top-and-body">
+                <Navbar 
+                    changeBoardProperties={changeBoardProperties}
+                    boardProperties={boardProperties}
+                    changeShowMetricsData={changeShowMetricsData}
+                    showMetricsData={showMetricsData}
+                    changeTileSize={changeTileSize}
+                    changeNumberSize={changeNumberSize}
+                    retrieveGameData={retrieveGameData}
+                />
+                <GameBoard 
+                    boardProperties={boardProperties}
+                    showMetricsData={showMetricsData}
+                    tileSize={tileSize}
+                    numberSize={numberSize}
+                    oldGameData={oldGameData}
+                />
+            </div>
             <Footer />
         </div>
     )

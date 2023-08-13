@@ -8,6 +8,10 @@ body {
     margin: 0;
 }
 
+.app--top-and-body {
+    min-height: 87vh;
+}
+
 .navbar--title {
     display: flex;
     margin-bottom: 10px;
@@ -141,10 +145,6 @@ th, td {
     flex-direction: column;
     align-items: center;
     gap: 3px;
-}
-
-.gameBoard--container {
-    min-height: 79vh;
 }
 
 .header--container {
