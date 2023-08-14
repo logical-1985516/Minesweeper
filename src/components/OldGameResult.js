@@ -3,7 +3,7 @@ import React from "react"
 export default function OldGameResult(props) {
     const showMetricsData = props.showMetricsData
     const width = props.width
-    const height = props.width
+    const height = props.height
     const newBoard = props.board
     const mines = props.mines
     const threeBV = props.threeBV
@@ -12,10 +12,10 @@ export default function OldGameResult(props) {
 
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
-        wastedRightClicks, wastedChords) {
+        wastedRightClicks, wastedChords, id) {
         props.retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
             threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, 
-            wastedLeftClicks, wastedRightClicks, wastedChords)
+            wastedLeftClicks, wastedRightClicks, wastedChords, id)
     }
 
     const gameProgress = current3BV / threeBV
@@ -33,20 +33,27 @@ export default function OldGameResult(props) {
     const date = new Date(props.date)
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", 
         "September", "October", "November", "December"];
+    const hours = date.getHours() === 0 ? `0${date.getHours()}` : date.getHours()
     const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
     const seconds = date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()
 
+    const styles = {
+        backgroundColor: props.selected ? "lightblue" : "white"
+    }
+
     return (
-        <tr>
+        <tr style={styles}>
             <td>
                 <button onClick={() => retrieveGameData(newBoard, props.difficulty,
                         height, width, mines, correctFlags, props.time, threeBV, current3BV, 
                         props.usefulLeftClicks, props.usefulRightClicks, props.usefulChords, 
-                        props.wastedLeftClicks, props.wastedRightClicks, props.wastedChords)}>
+                        props.wastedLeftClicks, props.wastedRightClicks, props.wastedChords,
+                        props.id)}>
                     View
                 </button>
             </td>
             <td>{current3BV === threeBV ? "Win" : "Loss"}</td>
+            <td>{props.noFlags}</td>
             <td>{props.gameMode}</td>
             <td>{props.difficulty}</td>
             <td>{height}x{width}/{mines}</td>
@@ -69,7 +76,7 @@ export default function OldGameResult(props) {
             {showMetricsData.showThroughput && <td>{Math.round(100 * throughput)}%</td>}
             {showMetricsData.showCorrectness && <td>{Math.round(100 * correctness)}%</td>}
             <td>{`${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()
-                } ${date.getHours()}:${minutes}:${seconds}`}</td>
+                } ${hours}:${minutes}:${seconds}`}</td>
         </tr>
     )
 }

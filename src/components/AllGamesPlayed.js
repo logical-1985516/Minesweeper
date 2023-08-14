@@ -13,6 +13,7 @@ export default function AllGamesPlayed(props) {
     )
     const [showDropdown, setShowDropdown] = React.useState("")
     const [outcomeFilter, setOutcomeFilter] = React.useState("All")
+    const [noFlagsFilter, setNoFlagsFilter] = React.useState("All")
     const [gameModeFilter, setGameModeFilter] = React.useState("All")
     const [difficultyFilter, setDifficultyFilter] = React.useState("All")
     const [sortBy, setSortBy] = React.useState("Date")
@@ -87,10 +88,10 @@ export default function AllGamesPlayed(props) {
 
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
-        wastedRightClicks, wastedChords) {
+        wastedRightClicks, wastedChords, id) {
         props.retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
             threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, 
-            wastedLeftClicks, wastedRightClicks, wastedChords)
+            wastedLeftClicks, wastedRightClicks, wastedChords, id)
     }
 
     React.useEffect(() => {
@@ -130,7 +131,7 @@ export default function AllGamesPlayed(props) {
             : metric === "Useful Clicks"
             ? "usefulClicks"
             : "wastedClicks"
-        return ["estimatedTime"].includes(fieldName)
+        return ["estimatedTime", "wastedClicks"].includes(fieldName)
             ? (object1, object2) => object1[fieldName] - object2[fieldName]
             : (object1, object2) => object2[fieldName] - object1[fieldName]
     }
@@ -322,24 +323,33 @@ export default function AllGamesPlayed(props) {
             throughput: throughput,
             correctness: correctness,
             date: date,
-            correctFlags: correctFlags
+            correctFlags: correctFlags,
+            noFlags: gameResult.usefulRightClicks + gameResult.wastedRightClicks === 0
+                ? "Yes"
+                : "No"
     }})
 
-    const filterByOutcome = gamesResults && oldGameResults.filter(oldGameResult => 
-        outcomeFilter === "All" || oldGameResult.outcome === outcomeFilter)
-    const filterByHeight = gamesResults && filterByOutcome.filter(oldGameResult =>
-        boardFilter.height === "All" || oldGameResult.height === boardFilter.height)
-    const filterByWidth = gamesResults && filterByHeight.filter(oldGameResult =>
-        boardFilter.width === "All" || oldGameResult.width === boardFilter.width)
-    console.log(filterByWidth)
-    const filterByMines = gamesResults && filterByWidth.filter(oldGameResult =>
-        boardFilter.mines === "All" || oldGameResult.mines === boardFilter.mines)
-        .sort(sortFunction(sortBy))
-    // (gamesResults && sortBy !== "Date" && sortBy !== "Time") && filterByMines.sort(sortFunction(sortBy))
+    const filterByOutcome = gamesResults && (outcomeFilter === "All"
+        ? oldGameResults
+        : oldGameResults.filter(oldGameResult => oldGameResult.outcome === outcomeFilter))
+    const filterByNoFlags = gamesResults && (noFlagsFilter === "All"
+        ? filterByOutcome
+        : filterByOutcome.filter(oldGameResult => oldGameResult.noFlags === noFlagsFilter))
+    const filterByHeight = gamesResults && (boardFilter.height === "All"
+        ? filterByNoFlags
+        : filterByNoFlags.filter(oldGameResult => oldGameResult.height === boardFilter.height))
+    const filterByWidth = gamesResults && (boardFilter.width === "All"
+        ? filterByHeight
+        : filterByHeight.filter(oldGameResult => oldGameResult.width === boardFilter.width))
+    const filterByMines = gamesResults && (boardFilter.mines === "All"
+        ? filterByWidth.sort(sortFunction(sortBy))
+        : filterByWidth.filter(oldGameResult => oldGameResult.mines === boardFilter.mines)
+            .sort(sortFunction(sortBy)))
 
     const oldGameResultElements = gamesResults && filterByMines.map(oldGameResult =>
         <OldGameResult 
             key={oldGameResult.key}
+            id={oldGameResult.key}
             board={oldGameResult.board}
             outcome={oldGameResult.outcome}
             gameMode={oldGameResult.gameMode}
@@ -370,8 +380,10 @@ export default function AllGamesPlayed(props) {
             correctness={oldGameResult.correctness}
             date={oldGameResult.date}
             correctFlags={oldGameResult.correctFlags}
+            noFlags={oldGameResult.noFlags}
             showMetricsData={showMetricsData}
             retrieveGameData={retrieveGameData}
+            selected={oldGameResult.key === props.selectedGameId}
         />
     )
 
@@ -388,7 +400,7 @@ export default function AllGamesPlayed(props) {
                 toggleDropdown={toggleDropdown}
                 dropdownName={"fontSize"}
                 showDropdown={showDropdown}
-                items={[10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24]}
+                items={[6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24]}
                 setStateFunction={setOldGamesFontSize}
             /> 
             <div>
@@ -403,6 +415,16 @@ export default function AllGamesPlayed(props) {
                         showDropdown={showDropdown}
                         items={["All", "Win", "Loss"]}
                         setStateFunction={setOutcomeFilter}
+                    />
+                    <LabelAndDropdown
+                        dropdownEvent={dropdownEvent}
+                        labelName="No Flags"
+                        state={noFlagsFilter}
+                        toggleDropdown={toggleDropdown}
+                        dropdownName={"noFlagsFilter"}
+                        showDropdown={showDropdown}
+                        items={["All", "Yes", "No"]}
+                        setStateFunction={setNoFlagsFilter}
                     />
                     <LabelAndDropdown
                         dropdownEvent={dropdownEvent}
@@ -490,6 +512,7 @@ export default function AllGamesPlayed(props) {
                     <tr>
                         <th>View</th>
                         <th>Outcome</th>
+                        <th>NF?</th>
                         <th>Game Mode</th>
                         <th>Difficulty</th>
                         <th>Board</th>

@@ -30,10 +30,10 @@ export default function Navbar(props) {
 
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
-        wastedRightClicks, wastedChords) {
+        wastedRightClicks, wastedChords, id) {
         props.retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time,
             threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, 
-            wastedLeftClicks, wastedRightClicks, wastedChords)
+            wastedLeftClicks, wastedRightClicks, wastedChords, id)
     }
 
     const styles = {
@@ -73,6 +73,7 @@ export default function Navbar(props) {
             <AllGamesPlayed 
                 showMetricsData={props.showMetricsData}
                 retrieveGameData={retrieveGameData}
+                selectedGameId={props.selectedGameId}
             />}
             </div>}
         </nav>

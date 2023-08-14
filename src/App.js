@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar"
 import GameBoard from "./components/GameBoard"
 import Footer from "./components/Footer"
 import "./style.css"
+import OldGameResult from "./components/OldGameResult"
 
 export default function App() {
     const [boardProperties, setBoardProperties] = React.useState(
@@ -31,9 +32,7 @@ export default function App() {
         JSON.parse(localStorage.getItem("numberSize")) || 2 / 3
     )
 
-    const [oldGameData, setOldGameData] = React.useState(
-        JSON.parse(localStorage.getItem("oldGameData"))
-    )
+    const [oldGameData, setOldGameData] = React.useState("")
 
     function changeBoardProperties(boardProperties) {
         setBoardProperties(boardProperties)
@@ -53,7 +52,7 @@ export default function App() {
 
     function retrieveGameData(newBoard, difficulty, height, width, mines, correctFlags, time, 
         threeBV, current3BV, usefulLeftClicks, usefulRightClicks, usefulChords, wastedLeftClicks, 
-        wastedRightClicks, wastedChords) {
+        wastedRightClicks, wastedChords, id) {
         setBoardProperties({
             difficulty: difficulty,
             height: height,
@@ -61,6 +60,7 @@ export default function App() {
             initialMines: mines
         })
         setOldGameData({
+            id: id,
             board: newBoard,
             correctFlags: correctFlags,
             time: time,
@@ -75,6 +75,10 @@ export default function App() {
         })
     }
 
+    function resetOldGameData() {
+        setOldGameData(null)
+    }
+
     return (
         <div className="app--container">
             <div className="app--top-and-body">
@@ -86,6 +90,7 @@ export default function App() {
                     changeTileSize={changeTileSize}
                     changeNumberSize={changeNumberSize}
                     retrieveGameData={retrieveGameData}
+                    selectedGameId={oldGameData ? oldGameData.id : ""}
                 />
                 <GameBoard 
                     boardProperties={boardProperties}
@@ -93,6 +98,7 @@ export default function App() {
                     tileSize={tileSize}
                     numberSize={numberSize}
                     oldGameData={oldGameData}
+                    resetOldGameData={resetOldGameData}
                 />
             </div>
             <Footer />

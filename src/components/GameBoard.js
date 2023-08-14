@@ -587,7 +587,7 @@ export default function GameBoard(props) {
 
     /**
      * Reset the board if the board properties are changed from the form in
-     * Navbar
+     * ChangeBoard
      */
     React.useEffect(() => {
         resetBoard()
@@ -611,6 +611,16 @@ export default function GameBoard(props) {
             setWastedChords(oldGameData.wastedChords)
         }
     }, [props.oldGameData])
+
+    /**
+     * Resets the old game data to unhighlight the results that the board
+     * corresponds to
+     */
+    React.useEffect(() => {
+        if (gameStatus === "") {
+            props.resetOldGameData()
+        }
+    }, [gameStatus])
     
     return (
         <div className="gameBoard--container">

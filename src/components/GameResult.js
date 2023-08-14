@@ -18,7 +18,7 @@ export default function GameResult(props) {
     const throughput = props.current3BV / usefulClicks
     const correctness = usefulClicks / totalClicks
     const boardData = props.board.map(row => row.map(tile => ({
-        key: tile.id,
+        id: tile.id,
         value: tile.value,
         isRevealed: tile.isRevealed,
         isFlagged: tile.isFlagged
