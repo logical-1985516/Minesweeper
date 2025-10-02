@@ -2,6 +2,7 @@ import React from "react"
 import ChangeBoard from "./ChangeBoard"
 import Settings from "./Settings"
 import AllGamesPlayed from "./AllGamesPlayed"
+import NavbarButton from "./NavbarButton"
 
 export default function Navbar(props) {
     const [itemOpen, setItemOpen] = React.useState("")
@@ -45,15 +46,12 @@ export default function Navbar(props) {
         <nav className="navbar--container" style={styles}>
             <div className="navbar--title">
                 <span>Minesweeper</span>
-                <button onClick={() => toggleShow("changeBoard")} className="navbar--button">
-                    Change Board
-                </button>
-                <button onClick={() => toggleShow("settings")} className="navbar--button">
-                    Settings
-                </button>
-                <button onClick={() => toggleShow("allGamesPlayed")} className="navbar--button">
-                    All Games
-                </button>
+                <NavbarButton label="Change Board" isActive={itemOpen === "changeBoard"} 
+                onClick={() => toggleShow("changeBoard")} />
+                <NavbarButton label="Settings" isActive={itemOpen === "settings"} 
+                onClick={() => toggleShow("settings")} />
+                <NavbarButton label="All Games" isActive={itemOpen === "allGamesPlayed"} 
+                onClick={() => toggleShow("allGamesPlayed")} />
             </div>
             {itemOpen &&
             <div className="navbar--item">
