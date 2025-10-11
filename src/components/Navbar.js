@@ -4,6 +4,7 @@ import Settings from "./Settings"
 import AllGamesPlayed from "./AllGamesPlayed"
 import NavbarButton from "./NavbarButton"
 import Authentication from "./Authentication"
+import UserStatistics from "./UserStatistics"
 
 export default function Navbar(props) {
     const [userData, setUserData] = React.useState(props.userData)
@@ -42,6 +43,10 @@ export default function Navbar(props) {
     function changeUserData(newUserData) {
         setUserData(newUserData)
     }
+    
+    function retrieveUserStatistics() {
+        toggleShow("userStatistics")
+    }
 
     const styles = {
         borderBottom: itemOpen
@@ -59,19 +64,20 @@ export default function Navbar(props) {
                         onClick={() => toggleShow("settings")} />
                     <NavbarButton label="All Games" isActive={itemOpen === "allGamesPlayed"} 
                         onClick={() => toggleShow("allGamesPlayed")} />
+                    <NavbarButton label="User Statistics" isActive={itemOpen === "userStatistics"} 
+                        onClick={retrieveUserStatistics} />
                     <NavbarButton label="Close" 
                         onClick={() => toggleShow("")} />
                 </div>
                 <div className="navbar--title-right">
                     <NavbarButton label={userData.username} />
-                    <NavbarButton label={userData.username ? "Log out" : "Sign up/Log in"} 
+                    <NavbarButton label={userData.username ? "Log out" : "Sign up/Log in"}
                         onClick={userData.username ? () => {setUserData({username: "", password: ""})
                             localStorage.setItem("userData", JSON.stringify({username: "", password: ""}))
                             setItemOpen("")} : 
                             () => toggleShow("authentication")} />
                 </div>
             </div>
-            {itemOpen &&
             <div className="navbar--item">
             {itemOpen === "changeBoard" && 
             <ChangeBoard 
@@ -83,8 +89,7 @@ export default function Navbar(props) {
                 changeShowMetricsData={changeShowMetricsData}
                 changeTileSize={changeTileSize}
                 changeNumberSize={changeNumberSize}
-            />
-            }
+            />}
             {itemOpen === "allGamesPlayed" &&
             <AllGamesPlayed 
                 showMetricsData={props.showMetricsData}
@@ -97,7 +102,11 @@ export default function Navbar(props) {
                 userData={userData}
                 changeItemOpen={setItemOpen}
             />}
-            </div>}
+            {itemOpen === "userStatistics" &&
+            <UserStatistics 
+                userData={userData}
+            />}
+            </div>
         </nav>
     )
 }
