@@ -72,6 +72,7 @@ export default function Navbar(props) {
                 <div className="navbar--title-right">
                     <NavbarButton label={userData.username} />
                     <NavbarButton label={userData.username ? "Log out" : "Sign up/Log in"}
+                        isActive={itemOpen === "authentication"} 
                         onClick={userData.username ? () => {setUserData({username: "", password: ""})
                             localStorage.setItem("userData", JSON.stringify({username: "", password: ""}))
                             setItemOpen("")} : 
