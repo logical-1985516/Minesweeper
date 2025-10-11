@@ -6,6 +6,13 @@ import "./style.css"
 import OldGameResult from "./components/OldGameResult"
 
 export default function App() {
+    const [userData, setUserData] = React.useState(
+        JSON.parse(localStorage.getItem("userData")) || {
+            username: "",
+            password: ""
+        }
+    )
+
     const [boardProperties, setBoardProperties] = React.useState(
         JSON.parse(localStorage.getItem("currentBoard")) || {
             difficulty: "Beginner",
@@ -33,6 +40,10 @@ export default function App() {
     )
 
     const [oldGameData, setOldGameData] = React.useState("")
+
+    function changeUserData(newUserData) {
+        setUserData(newUserData)
+    }
 
     function changeBoardProperties(boardProperties) {
         setBoardProperties(boardProperties)
@@ -83,6 +94,8 @@ export default function App() {
         <div className="app--container">
             <div className="app--top-and-body">
                 <Navbar 
+                    changeUserData={changeUserData}
+                    userData={userData}
                     changeBoardProperties={changeBoardProperties}
                     boardProperties={boardProperties}
                     changeShowMetricsData={changeShowMetricsData}
