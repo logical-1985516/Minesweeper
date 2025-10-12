@@ -9,6 +9,7 @@ import UserStatistics from "./UserStatistics"
 export default function Navbar(props) {
     const [userData, setUserData] = React.useState(props.userData)
     const [itemOpen, setItemOpen] = React.useState("")
+    const [userStatistics, setUserStatistics] = React.useState(null)
 
     function toggleShow(name) {
         itemOpen === name
@@ -45,9 +46,10 @@ export default function Navbar(props) {
     }
     
     async function retrieveUserStatistics() {
-        const response = await fetch(`http://localhost:8000/user_statistics/${userData.username}`);
-        const data = await response.json();
-        console.log(data);
+        const response = await fetch(`http://localhost:8000/user_statistics/${userData.username}`)
+        const data = await response.json()
+        console.log(data)
+        setUserStatistics(data)
     }
 
     const styles = {
@@ -113,6 +115,7 @@ export default function Navbar(props) {
             {itemOpen === "userStatistics" &&
             <UserStatistics 
                 userData={userData}
+                userStatistics={userStatistics}
             />}
             </div>
         </nav>
