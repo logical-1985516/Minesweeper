@@ -44,8 +44,10 @@ export default function Navbar(props) {
         setUserData(newUserData)
     }
     
-    function retrieveUserStatistics() {
-        toggleShow("userStatistics")
+    async function retrieveUserStatistics() {
+        const response = await fetch(`http://localhost:8000/user_statistics/${userData.username}`);
+        const data = await response.json();
+        console.log(data);
     }
 
     const styles = {
@@ -65,7 +67,12 @@ export default function Navbar(props) {
                     <NavbarButton label="All Games" isActive={itemOpen === "allGamesPlayed"} 
                         onClick={() => toggleShow("allGamesPlayed")} />
                     <NavbarButton label="User Statistics" isActive={itemOpen === "userStatistics"} 
-                        onClick={retrieveUserStatistics} />
+                        onClick={() => {
+                            if (userData.username && itemOpen !== "userStatistics") {
+                                retrieveUserStatistics()
+                            }
+                            toggleShow("userStatistics")
+                        }} />
                     <NavbarButton label="Close" 
                         onClick={() => toggleShow("")} />
                 </div>
