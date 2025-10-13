@@ -7,10 +7,7 @@ import OldGameResult from "./components/OldGameResult"
 
 export default function App() {
     const [userData, setUserData] = React.useState(
-        JSON.parse(localStorage.getItem("userData")) || {
-            username: "",
-            password: ""
-        }
+        JSON.parse(localStorage.getItem("userData")) || null
     )
 
     const [boardProperties, setBoardProperties] = React.useState(
